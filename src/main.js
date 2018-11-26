@@ -19,13 +19,15 @@ Vue.config.productionTip = false
   };
   firebase.initializeApp(config);
 
-/* eslint-disable no-new */
-// new Vue({
-//   el: '#app',
-//   router,
-//   components: { App },
-//   template: '<App/>'
-// })
+  // Returns the signed-in user's profile pic URL.
+function GetUserEmail() {
+  return firebase.auth().user.email;
+}
+
+// Returns true if a user is signed-in.
+function isUserSignedIn() {
+  return !!firebase.auth().user;
+}
 
 firebase.auth().onAuthStateChanged(function(user) {
   if (!app){

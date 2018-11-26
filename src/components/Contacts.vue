@@ -1,7 +1,7 @@
 <template>
-  <div class="money-jar-home">
+  <div class="contacts">
     <h1>{{ msg }}</h1>
-    <button>Add Jar</button>
+    <button>Add Contact</button>
   </div>
 </template>
 
@@ -9,10 +9,10 @@
 import firebase from 'firebase'
 
 export default {
-  name: 'MoneyJarHome',
+  name: 'Contacts',
   data () {
     return {
-      msg: 'Money Jar Dashboard'
+      msg: 'Contacts'
     }
   },
   methods: {

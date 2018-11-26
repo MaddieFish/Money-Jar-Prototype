@@ -5,6 +5,7 @@ import Router from 'vue-router'
 import Login from '@/components/Login'
 import SignUp from '@/components/SignUp'
 import MoneyJarHome from '@/components/MoneyJarHome'
+import Contacts from '@/components/Contacts'
 import firebase from 'firebase'
 
 Vue.use(Router)
@@ -33,6 +34,14 @@ let router = new Router({
       path: '/money-jar-home',
       name: 'MoneyJarHome',
       component: MoneyJarHome,
+      meta: {
+          requiresAuth: true
+      }
+    },
+    {
+      path: '/contacts',
+      name: 'Contacts',
+      component: Contacts,
       meta: {
           requiresAuth: true
       }
