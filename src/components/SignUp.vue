@@ -1,74 +1,67 @@
 <template>
   <div class="sign-up">
-    <img src="../assets/logo.png" width="300px">
-    <h3>Create a new account</h3>
-    <input
-      v-model="email"
-      type="text"
-      class="input"
-      placeholder="Email"
-      required>
-    <br>
-    <input
-      v-model="password"
-      type="password"
-      class="input"
-      placeholder="Password"
-      required>
-    <br>
-    <button v-on:click="signUp" class="button">Sign Up!</button>
-    <button class="button">
-      <router-link to="/login">
-        Back
-      </router-link>
-    </button>
-  </div>
+      <h4>User creation</h4>
+      <input type="text" v-model="email" placeholder="Email"><br>
+      <input type="password" v-model="password" placeholder="Password"><br>
+      <button v-on:click="signUp">Sign Up</button>
+      <span>Go back to <router-link to="/login">login</router-link>.</span>
+    </div>
 </template>
 
 <script>
   import firebase from 'firebase'
+
   export default {
-    name: 'signup',
-    data () {
+    name: 'signUp',
+    data: function() {
       return {
         email: '',
         password: ''
       }
     },
     methods: {
-      signUp () {
-        firebase.auth().createUserWithEmailAndPassword(this.email, this.password).then((user) => {
-          this.$router.replace('/login')
-        }).catch((err) => {
-          alert(err.message)
-        });
-      }
+      signUp: function() {
+        firebase.auth().createUserWithEmailAndPassword(this.email, this.password).then(
+          (user) => {
+            alert('Your user has been created!')
+            this.$router.replace('money-jar-home')
+          },
+          (err) => {
+            alert('Please try again' + err.message)
+        }
+      );
     }
   }
+}
 </script>
 
 <style scoped>
-.sign-up {
-  margin-top: 40px;
-}
-input {
-  align-self: center;
-  margin: 10px 0;
-  width: auto;
-  padding: 15px;
-}
-button {
-  margin: 10px 0;
-  background-color: #0476F2;
-}
-a {
-  color: #2c3e50;
-}
-p {
-  margin-top: 40px;
-  font-size: 13px;
-}
-h3 {
-  font-weight: normal;
-}
+  .signUp {
+    margin-top: 40px;
+    /* background-color: rgb(255, 255, 102); */
+  }
+  input {
+    margin: 10px 0;
+    width: 40%;
+    padding: 15px;
+  }
+  button {
+    padding: 10px 20px;
+    background:  #42b983;
+    color: white;
+    font-weight: bold;
+    border: none;
+    border-radius: 22px;
+    outline: 0;
+    cursor: pointer;
+  }
+  p {
+    margin-top: 40px;
+    font-size: 13px;
+  }
+  span {
+    display: block;
+    margin-top: 20px;
+    font-size: 11px;
+  }
 </style>

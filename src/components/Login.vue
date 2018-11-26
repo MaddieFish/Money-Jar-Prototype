@@ -1,30 +1,16 @@
 <template>
   <div class="login">
-    <img src="../assets/logo.png" width="300px">
-    <h3>Money Jar - Shared Accounts</h3>
-    <input
-      type="text"
-      v-model="email"
-      placeholder="Email address"
-      class="input"
-      required>
-    <br/>
-    <input
-      type="password"
-      v-model="password"
-      placeholder="Password"
-      class="input"
-      required>
-    <br/>
-    <button v-on:click="login" class="button">Enter</button>
-    <p><router-link to="/signup">
-      New Here? Create a new account
-    </router-link></p>
+      <h3>Sign In</h3>
+      <input type="text" v-model="email" placeholder="Email"><br>
+      <input type="password" v-model="password" placeholder="Password"><br>
+      <button v-on:click="signIn">Login</button>
+      <p>No user? <router-link to="/sign-up">Create one</router-link>.</p>
   </div>
 </template>
 
 <script>
   import firebase from 'firebase'
+
   export default {
     name: 'login',
     data: function() {
@@ -34,40 +20,46 @@
       }
     },
     methods: {
-      login () {
-        firebase.auth().signInWithEmailAndPassword(this.email, this.password).then((user) => {
-          this.$router.replace('/jars')
-        }).catch((err) => {
-          alert(err.message)
-        })
-      }
+    signIn: function() {
+      firebase.auth().signInWithEmailAndPassword(this.email, this.password).then(
+        (user) => {
+          alert('Login was successful.')
+          this.$router.replace('money-jar-home')
+        },
+        (err) => {
+          alert('Wrong email or password. ' + err.message)
+        }
+      );
     }
   }
+}
 </script>
 
 <style scoped>
-.login {
-  margin-top: 40px;
-}
-input {
-  align-self: center;
-  margin: 10px 0;
-  width: auto;
-  padding: 15px;
-}
-button {
-  margin: 10px 0;
-  background-color: #0476F2;
-}
-a {
-  color: black;
-  text-decoration: underline;
-}
-p {
-  margin-top: 40px;
-  font-size: 13px;
-}
-h1, h2 {
-  font-weight: normal;
-}
+  .login {
+    margin-top: 40px;
+  }
+  input {
+    margin: 10px 0;
+    width: 40%;
+    padding: 15px;
+  }
+  button {
+    padding: 10px 20px;
+    background:  #42b983;
+    color: white;
+    font-weight: bold;
+    border: none;
+    border-radius: 22px;
+    outline: 0;
+    cursor: pointer;
+  }
+  p {
+    margin-top: 40px;
+    font-size: 13px;
+  }
+  p a {
+    text-decoration: underline;
+    cursor: pointer;
+  }
 </style>
