@@ -1,20 +1,22 @@
 import Vue from 'vue'
 import Router from 'vue-router'
+import firebase from 'firebase'
 
 // import HelloWorld from '@/components/HelloWorld'
 import Login from '@/components/Login'
 import SignUp from '@/components/SignUp'
 import MoneyJarHome from '@/components/MoneyJarHome'
 import Contacts from '@/components/Contacts'
-import firebase from 'firebase'
+import Settings from '@/components/Settings'
 
 Vue.use(Router)
 
 let router = new Router({
+  mode: 'history',
   routes: [
     {
       path: '*',
-      redirect: '/login'
+      redirect: '/dashboard'
     },
     {
       path: '/',
@@ -31,7 +33,7 @@ let router = new Router({
       component: SignUp
     },
     {
-      path: '/money-jar-home',
+      path: '/dashboard',
       name: 'MoneyJarHome',
       component: MoneyJarHome,
       meta: {
@@ -42,6 +44,14 @@ let router = new Router({
       path: '/contacts',
       name: 'Contacts',
       component: Contacts,
+      meta: {
+          requiresAuth: true
+      }
+    },
+    {
+      path: '/settings',
+      name: 'Settings',
+      component: Settings,
       meta: {
           requiresAuth: true
       }
@@ -58,8 +68,8 @@ let router = new Router({
 })
 
 router.beforeEach((to, from, next) => {
-  let currentUser = firebase.auth().currentUser;
   let requiresAuth = to.matched.some(record => record.meta.requiresAuth);
+  let currentUser = firebase.auth().currentUser;
 
   if(requiresAuth && !currentUser) next ('login')
   else if (!requiresAuth && currentUser) next('hello')

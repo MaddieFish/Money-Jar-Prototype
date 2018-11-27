@@ -1,38 +1,72 @@
 <template>
   <div class="sign-up">
       <h4>User creation</h4>
-      <input type="text" v-model="email" placeholder="Email"><br>
-      <input type="password" v-model="password" placeholder="Password"><br>
+      <input type="text" v-model.trim="signupForm.name" placeholder="Username" id="name"/><br>
+      <input type="text" v-model.trim="signupForm.email" placeholder="Email" id ="email2"><br>
+      <input type="password" v-model.trim="signupForm.password" placeholder="Password" id="password2"><br>
       <button v-on:click="signUp">Sign Up</button>
       <span>Go back to <router-link to="/login">login</router-link>.</span>
     </div>
 </template>
 
 <script>
-  import firebase from 'firebase'
+const fb = require('../firebaseConfig.js')
+// import firebase from 'firebase'
 
   export default {
     name: 'signUp',
     data: function() {
       return {
-        email: '',
-        password: ''
+        signupForm: {
+          name: '',
+          email: '',
+          password: ''
+        }
       }
     },
     methods: {
-      signUp: function() {
-        firebase.auth().createUserWithEmailAndPassword(this.email, this.password).then(
-          (user) => {
-            alert('Your user has been created!')
-            this.$router.replace('money-jar-home')
-          },
-          (err) => {
-            alert('Please try again' + err.message)
-        }
-      );
+      signUp: function (){
+          fb.auth.createUserWithEmailAndPassword(this.signupForm.email, this.signupForm.password).then(
+            user => {
+           this.$store.commit('setCurrentUser', user.user)
+           console.log(user)
+
+           // create user obj
+           fb.usersCollection.doc(user.user.uid).set({
+             name: this.signupForm.name,
+            email: this.signupForm.email
+           }).then(() => {
+              this.$router.push('/dashboard')
+              this.$store.dispatch('fetchUserProfile')
+              alert('Your user has been created!')
+           }).catch(err => {
+              alert('Please try again. ' + err.message)
+           })
+       }).catch(err => {
+              alert('Please try again. ' + err.message)
+       })
+    }
+    //   signUp: function() {
+    //     // firebase.auth().createUserWithEmailAndPassword(this.email, this.password).then(
+    //     fb.auth.createUserWithEmailAndPassword(this.email, this.password).then(
+    //       (user) => {
+    //         this.$store.commit('setCurrentUser', user)
+    //         // create user obj
+    //         fb.usersCollection.doc(user.uid).set({
+    //            name: this.signupForm.name,
+    //            title: this.signupForm.title
+    //        }).then(() => {
+    //         // this.$router.replace('dashboard')
+    //         this.$router.push('/dashboard')
+    //         alert('Your user has been created!')
+    //         this.$store.commit('fetchUserProfile', user)
+    //       )},
+    //       (err) => {
+    //         alert('Please try again' + err.message)
+    //     }
+    //   );
     }
   }
-}
 </script>
 
 <style scoped>

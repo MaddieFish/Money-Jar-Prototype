@@ -1,13 +1,16 @@
 <template>
     <header>
-        <h2>Money Jar Accounts</h2>
+        <h2>CHEQUEST</h2>
         <nav>
             <ul>
                 <li>
-                    <router-link to="/money-jar-home">Money Jar Dashboard</router-link>
+                    <router-link to="/dashboard">Dashboard</router-link>
                 </li>
                 <li>
                     <router-link to="/contacts">Contacts</router-link>
+                </li>
+                <li>
+                    <router-link to="/settings">Settings</router-link>
                 </li>
                 <li>
                   <button v-on:click="logout">Logout</button>
@@ -18,12 +21,15 @@
 </template>
 
 <script>
+// const fb = require('../firebaseConfig.js')
 import firebase from 'firebase'
+
   export default {
     methods: {
       logout: function() {
         firebase.auth().signOut().then(() => {
-          this.$router.replace('login')
+          this.$router.push('login')
+          // this.$router.replace('login')
         })
       }
     }

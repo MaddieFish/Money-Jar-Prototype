@@ -1,11 +1,14 @@
 <template>
-  <div class="money-jar-home">
+  <div class="dashboard">
     <h1>{{ msg }}</h1>
     <button>Add Jar</button>
+    <!-- <img src = "/assets/addjar2.png"></img> -->
+
   </div>
 </template>
 
 <script>
+// const fb = require('../firebaseConfig.js')
 import firebase from 'firebase'
 
 export default {

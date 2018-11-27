@@ -1,6 +1,5 @@
 <template>
   <div>
-    <button class="button logout" v-on:click="logout">Logout</button>
     <article class="money jars" v-for="(jar, idx) in jars" :key="idx">
       <div>
         <img style="margin: 10px" :src="jar.image" height="291px" width="192px">
@@ -49,11 +48,6 @@ export default {
     deleteJar (id) {
       db.collection('jars').doc(id).delete()
     },
-    logout () {
-      firebase.auth().signOut().then(() => {
-        this.$router.replace('login')
-      })
-    }
   }
 }
 </script>
@@ -80,9 +74,5 @@ input, button {
 }
 button {
   background-color: #0476F2;
-}
-.logout {
-  left: 50%;
-  top: 100%;
 }
 </style>

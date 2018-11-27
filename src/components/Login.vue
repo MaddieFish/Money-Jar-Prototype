@@ -1,30 +1,37 @@
 <template>
   <div class="login">
       <h3>Sign In</h3>
-      <input type="text" v-model="email" placeholder="Email"><br>
-      <input type="password" v-model="password" placeholder="Password"><br>
+      <input type="text" v-model.trim="loginForm.email" placeholder="Email" id="email"><br>
+      <input type="password" v-model.trim="loginForm.password" placeholder="********" id="password"><br>
       <button v-on:click="signIn">Login</button>
       <p>No user? <router-link to="/sign-up">Create one</router-link>.</p>
   </div>
 </template>
 
 <script>
-  import firebase from 'firebase'
+const fb = require('../firebaseConfig.js')
+// import firebase from 'firebase'
 
   export default {
     name: 'login',
     data: function() {
       return {
-        email: '',
-        password: ''
+        loginForm: {
+          email: '',
+          password: ''
+        }
       }
     },
     methods: {
     signIn: function() {
-      firebase.auth().signInWithEmailAndPassword(this.email, this.password).then(
-        (user) => {
+      // firebase.auth().signInWithEmailAndPassword(this.email, this.password).then(
+        fb.auth.signInWithEmailAndPassword(this.loginForm.email, this.loginForm.password).then(
+        user => {
+          // this.$router.replace('dashboard')
+          this.$router.push('/dasboard')
+          this.$store.commit('setCurrentUser', user.user)
+          this.$store.dispatch('fetchUserProfile')
           alert('Login was successful.')
-          this.$router.replace('money-jar-home')
         },
         (err) => {
           alert('Wrong email or password. ' + err.message)
