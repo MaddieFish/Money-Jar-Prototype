@@ -8,9 +8,9 @@
           <p>{{ userProfile.email }}<p>
             <div class="create-jar">
               <form @submit.prevent>
-                <textarea></textarea>
-                <button>Add Jar</button>
-              <!-- <button @click="createJar" :disabled="post.content == """>Add Jar</button> -->
+                <textarea v-model.trim="post.content"></textarea>
+                <!-- <button>Add Jar</button> -->
+              <button @click="createJar" :disabled="post.content == ''">Add Jar</button>
             </form>
         </div>
       </div>
@@ -34,30 +34,30 @@ export default {
   name: 'MoneyJarHome',
   data () {
     return {
-      msg: 'Money Jar Dashboard'
-    //   post: {
-    //             content: ''
-    //         }
+      msg: 'Money Jar Dashboard',
+      post: {
+                content: ''
+            }
     }
   },
   computed: {
     ...mapState(['userProfile'])
   },
   methods: {
-    // createJar(){
-    //   fb.postsCollection.add({
-    //            createdOn: new Date(),
-    //            content: this.post.content,
-    //            userId: this.currentUser.uid,
-    //            userName: this.userProfile.name,
-    //            comments: 0,
-    //            likes: 0
-    //        }).then(ref => {
-    //            this.post.content = ''
-    //        }).catch(err => {
-    //            console.log(err)
-    //        })
-    // }
+    createJar(){
+      fb.postsCollection.add({
+               createdOn: new Date(),
+               content: this.post.content,
+               userId: this.currentUser.uid,
+               userName: this.userProfile.name,
+               comments: 0,
+               likes: 0
+           }).then(ref => {
+               this.post.content = ''
+           }).catch(err => {
+               console.log(err)
+           })
+    }
   }
 }
 </script>
@@ -66,8 +66,8 @@ export default {
 <style scoped>
 .dashboard {
   align-content: center;
-  margin-left: 25%;
-  margin-right: 25%;
+  margin-left: 20%;
+  margin-right: 20%;
 }
 h1, h5 {
   font-weight: normal;
@@ -82,8 +82,10 @@ li {
 }
 textarea{
   padding-bottom: 20px;
+  width: 50%;
   padding: 20px 20px;
   margin: 5% 10% 2% 10%;
+  border-radius: 10px;
   align-self: center;
   box-sizing: content-box;
 }
@@ -105,6 +107,5 @@ button{
   border-style: solid;
   border-radius: 10px;
   box-sizing: content-box;
-  /* align-self: center; */
 }
 </style>

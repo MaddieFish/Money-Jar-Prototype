@@ -41,9 +41,9 @@ const fb = require('../firebaseConfig.js')
     header {
         z-index: 999;
         background-color: #000;
-        height: 20%;
-        min-height: 70px;
-        max-height: 70px;
+        height: 35%;
+        min-height: 80px;
+        max-height: 85px;
         position: sticky;
         width: 100%;
         top: 0;
@@ -55,7 +55,7 @@ const fb = require('../firebaseConfig.js')
         font-family: "Lato", sans-serif;
         position: absolute;
         left: 5%;
-        padding: 11px 0 35px 0;
+        padding: 20px 0 35px 0;
         font-size: 0.9em;
         font-weight: 400;
         color: #fff;
@@ -78,6 +78,8 @@ const fb = require('../firebaseConfig.js')
     }
     button {
       padding: 10px 15px;
+      margin-top: 5%;
+      margin-bottom: 5%;
       background:  #42b983;
       color: white;
       font-weight: bold;
