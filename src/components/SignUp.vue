@@ -46,25 +46,6 @@ const fb = require('../firebaseConfig.js')
               alert('Please try again. ' + err.message)
        })
     }
-    //   signUp: function() {
-    //     // firebase.auth().createUserWithEmailAndPassword(this.email, this.password).then(
-    //     fb.auth.createUserWithEmailAndPassword(this.email, this.password).then(
-    //       (user) => {
-    //         this.$store.commit('setCurrentUser', user)
-    //         // create user obj
-    //         fb.usersCollection.doc(user.uid).set({
-    //            name: this.signupForm.name,
-    //            title: this.signupForm.title
-    //        }).then(() => {
-    //         // this.$router.replace('dashboard')
-    //         this.$router.push('/dashboard')
-    //         alert('Your user has been created!')
-    //         this.$store.commit('fetchUserProfile', user)
-    //       )},
-    //       (err) => {
-    //         alert('Please try again' + err.message)
-    //     }
-    //   );
     }
   }
 </script>

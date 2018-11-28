@@ -21,15 +21,15 @@
 </template>
 
 <script>
-// const fb = require('../firebaseConfig.js')
-import firebase from 'firebase'
+const fb = require('../firebaseConfig.js')
+// import firebase from 'firebase'
 
   export default {
     methods: {
       logout: function() {
-        firebase.auth().signOut().then(() => {
+        fb.auth.signOut().then(() => {
           this.$store.dispatch('clearData')
-          this.$router.push('login')
+          this.$router.push('/login')
           // this.$router.replace('login')
         })
       }

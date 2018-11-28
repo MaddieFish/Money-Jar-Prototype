@@ -5,6 +5,13 @@ const fb = require('./firebaseConfig.js')
 
 
 Vue.use(Vuex);
+// handle page reload
+fb.auth.onAuthStateChanged(user => {
+    if (user) {
+        store.commit('setCurrentUser', user)
+        store.dispatch('fetchUserProfile')
+    }
+})
 
 export const store = new Vuex.Store({
   state: {
@@ -12,6 +19,10 @@ export const store = new Vuex.Store({
           userProfile: {},
   },
   actions: {
+      clearData({ commit }) {
+        commit('setCurrentUser', null),
+        commit('setCurrentUser', {})
+      },
       fetchUserProfile({ commit, state }) {
           fb.usersCollection.doc(state.currentUser.uid).get().then(res => {
               commit('setUserProfile', res.data())
@@ -29,11 +40,3 @@ export const store = new Vuex.Store({
       }
   }
 });
-
-// export default {
-//   namespaced: true,
-//   state,
-//   mutations,
-//   getters,
-//   actions
-// }

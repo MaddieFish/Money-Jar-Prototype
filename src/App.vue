@@ -1,19 +1,23 @@
 <template>
   <div id="app">
-    <nav-component/>
+    <Navigation v-if="currentUser"/></Navigation>
+    <!-- <Navigation></Navigation> -->
+
     <img src="./assets/addjar4.png"/>
     <router-view></router-view>
   </div>
 </template>
 
 <script>
-import NavComponent from './components/Head'
+import { mapState } from 'vuex';
+import Navigation from './components/Navigation.vue';
 
 export default {
   name: 'App',
-  components: {
-      NavComponent
-    }
+  components: { Navigation },
+  computed: {
+    ...mapState(['currentUser'])
+  }
 }
 </script>
 
