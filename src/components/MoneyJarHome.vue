@@ -17,9 +17,29 @@
     </div>
       <!-- <img src = "/assets/addjar2.png"></img> -->
       <div class="row2">
-        <div>
-          <p class="no-results">There are currently no posts</p>
-        </div>
+        <div v-if="posts.length">
+          <!-- <transition name="fade">
+            <div v-if="hiddenPosts.length" @click="showNewPosts" class="hidden-posts">
+                <p>
+                    Click to show <span class="new-posts">{{ hiddenPosts.length }}</span>
+                    new <span v-if="hiddenPosts.length > 1">posts</span><span v-else>post</span>
+                </p>
+            </div>
+        </transition> -->
+          <div v-for="post in posts" class="post">
+        <h5>{{ post.userName }}</h5>
+        <span>{{ post.createdOn | formatDate }}</span>
+        <p>{{ post.content | trimLength }}</p>
+        <ul>
+            <li><a>comments {{ post.comments }}</a></li>
+            <li><a>likes {{ post.likes }}</a></li>
+            <li><a>view full Jar</a></li>
+        </ul>
+    </div>
+</div>
+<div v-else>
+    <p class="no-results">There are currently no Jars</p>
+</div>
       </div>
     </section>
   </div>
@@ -28,6 +48,7 @@
 <script>
 import { mapState } from 'vuex'
 const fb = require('../firebaseConfig.js')
+import moment from 'moment'
 // import firebase from 'firebase'
 
 export default {
@@ -41,22 +62,41 @@ export default {
     }
   },
   computed: {
-    ...mapState(['userProfile'])
+    ...mapState(['userProfile', 'currentUser', 'posts', 'hiddenPosts'])
   },
   methods: {
     createJar(){
       fb.postsCollection.add({
-               createdOn: new Date(),
-               content: this.post.content,
-               userId: this.currentUser.uid,
-               userName: this.userProfile.name,
-               comments: 0,
-               likes: 0
+                createdOn: new Date(),
+                content: this.post.content,
+                // userId: this.currentUser.uid,
+                userName: this.userProfile.name,
+                comments: 0,
+                likes: 0
            }).then(ref => {
                this.post.content = ''
            }).catch(err => {
                console.log(err)
            })
+    },
+    // showNewJars() {
+    //   let updatedPostsArray = this.hiddenPosts.concat(this.posts)
+    //   // clear hideenPosts array and update posts array
+    //   this.$store.commit('setHiddenPosts', null)
+    //   this.$store.commit('setPosts', updatedPostsArray)
+    // }
+  },
+  filters: {
+    formatDate(val) {
+        if (!val) { return '-' }
+        let date = val.toDate()
+        return moment(date).fromNow()
+    },
+    trimLength(val) {
+        if (val.length < 200) {
+            return val
+        }
+        return `${val.substring(0, 200)}...`
     }
   }
 }
@@ -103,8 +143,24 @@ button{
 .row1 {
   /* width:40%; */
   height: 20%;
+  margin-bottom: 10%;
   border-width: 5px;
   border-style: solid;
+  border-radius: 10px;
+  box-sizing: content-box;
+}
+.post {
+  /* margin: 10%, 10%, 10%, 10; */
+  border-width: 5px;
+  border-style: solid;
+  border-color:  #42b983;
+  border-radius: 10px;
+  box-sizing: content-box;
+}
+.hidden-posts {
+  border-width: 3px;
+  border-style: solid;
+  border-color:  #42b983;
   border-radius: 10px;
   box-sizing: content-box;
 }
