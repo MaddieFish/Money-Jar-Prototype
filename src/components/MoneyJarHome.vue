@@ -5,7 +5,7 @@
       <div class = "row1">
         <div class = "profile">
           <h2>{{ userProfile.name }}</h2>
-          <p>{{ userProfile.email }}<p>
+          <p><i>{{ userProfile.email }}</i><p>
             <div class="create-jar">
               <form @submit.prevent>
                 <textarea v-model.trim="post.content"></textarea>
@@ -19,7 +19,7 @@
       <div class="row2">
         <div v-if="posts.length">
           <!-- <transition name="fade">
-            <div v-if="hiddenPosts.length" @click="showNewPosts" class="hidden-posts">
+            <div v-if="hiddenPosts.length" @click="showNewJars" class="hidden-posts">
                 <p>
                     Click to show <span class="new-posts">{{ hiddenPosts.length }}</span>
                     new <span v-if="hiddenPosts.length > 1">posts</span><span v-else>post</span>
@@ -27,13 +27,17 @@
             </div>
         </transition> -->
           <div v-for="post in posts" class="post">
-        <h5>{{ post.userName }}</h5>
-        <span>{{ post.createdOn | formatDate }}</span>
+        <h4>{{ post.userName }}</h4>
+        <font size = "2px">
+          <span class = "date">{{ post.createdOn | formatDate }}</span>
+        </font>
         <p>{{ post.content | trimLength }}</p>
         <ul>
-            <li><a>comments {{ post.comments }}</a></li>
-            <li><a>likes {{ post.likes }}</a></li>
-            <li><a>view full Jar</a></li>
+          <font size = "2px">
+            <li><i><a>comments: {{ post.comments }}</a></i></li>
+            <li><i><a>likes: {{ post.likes }}</a></i></li>
+            <li><i><a>view full Jar</a></i></li>
+          </font>
         </ul>
     </div>
 </div>
@@ -103,6 +107,8 @@ export default {
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
+</script>
+<!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
 .dashboard {
   align-content: center;
@@ -119,6 +125,9 @@ ul {
 li {
   display: inline-block;
   margin: 0 10px;
+}
+.date {
+  color: 	#808080;
 }
 textarea{
   padding-bottom: 20px;
