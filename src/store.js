@@ -19,8 +19,8 @@ fb.auth.onAuthStateChanged(user => {
                 let post = doc.data()
                 post.id = doc.id
                 postsArray.push(post)
+                console.log(doc.id)
             })
-
             store.commit('setPosts', postsArray)
         })
     }

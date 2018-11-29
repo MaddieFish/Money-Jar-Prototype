@@ -10,7 +10,7 @@
               <form @submit.prevent>
                 <textarea v-model.trim="post.content"></textarea>
                 <!-- <button>Add Jar</button> -->
-              <button @click="createJar" :disabled="post.content == ''">Add Jar</button>
+              <button @click="createJar(post.id)" :disabled="post.content == ''">Add Jar</button>
             </form>
         </div>
       </div>
@@ -37,6 +37,7 @@
             <li><i><a>comments: {{ post.comments }}</a></i></li>
             <li><i><a>likes: {{ post.likes }}</a></i></li>
             <li><i><a>view full Jar</a></i></li>
+            <li><button class = "delete" @click="deleteJar(post.id)">Delete Jar</button></li>
           </font>
         </ul>
     </div>
@@ -52,8 +53,10 @@
 <script>
 import { mapState } from 'vuex'
 const fb = require('../firebaseConfig.js')
+import firebase from 'firebase'
 import moment from 'moment'
-// import firebase from 'firebase'
+
+var db = firebase.firestore();
 
 export default {
   name: 'MoneyJarHome',
@@ -61,7 +64,7 @@ export default {
     return {
       msg: 'Money Jar Dashboard',
       post: {
-                content: ''
+                content: '',
             }
     }
   },
@@ -69,7 +72,7 @@ export default {
     ...mapState(['userProfile', 'currentUser', 'posts', 'hiddenPosts'])
   },
   methods: {
-    createJar(){
+    createJar(id){
       fb.postsCollection.add({
                 createdOn: new Date(),
                 content: this.post.content,
@@ -82,6 +85,14 @@ export default {
            }).catch(err => {
                console.log(err)
            })
+    },
+    deleteJar(id){
+      fb.postsCollection.doc(id).delete().then(function() {
+                console.log("Document successfully deleted!");
+            }).catch(function(error) {
+                console.error("Error removing document: ", error);
+            });
+
     },
     // showNewJars() {
     //   let updatedPostsArray = this.hiddenPosts.concat(this.posts)
@@ -142,6 +153,17 @@ button{
   padding: 10px 20px;
   margin-bottom: 3%;
   background:  #42b983;
+  color: white;
+  font-weight: bold;
+  border: none;
+  border-radius: 22px;
+  outline: 0;
+  cursor: pointer;
+}
+.delete {
+  padding: 10px 20px;
+  margin-top: 10%;
+  background: #EA5656;
   color: white;
   font-weight: bold;
   border: none;

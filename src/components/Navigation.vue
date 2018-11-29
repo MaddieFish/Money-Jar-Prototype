@@ -41,6 +41,7 @@ const fb = require('../firebaseConfig.js')
     header {
         z-index: 999;
         background-color: #000;
+        /* background-color: #F0DF55; */
         height: 35%;
         min-height: 80px;
         max-height: 85px;
@@ -48,7 +49,7 @@ const fb = require('../firebaseConfig.js')
         width: 100%;
         top: 0;
         opacity: 0.9;
-        border-bottom: 1px solid gray;
+        /* border-bottom: 1px solid gray; */
         box-shadow: 0 2px 3px rgba(0, 0, 0, 0.04);
     }
     header > h2 {
@@ -57,8 +58,8 @@ const fb = require('../firebaseConfig.js')
         left: 5%;
         padding: 20px 0 35px 0;
         font-size: 0.9em;
-        font-weight: 400;
-        color: #fff;
+        font-weight: 700;
+        color: #42b983;
     }
     nav {
         position: absolute;
@@ -74,14 +75,15 @@ const fb = require('../firebaseConfig.js')
     }
     nav > ul > li > a {
         text-decoration: none;
-        color: #fff;
+        color: #F0DF55;
     }
     button {
-      padding: 10px 15px;
+      padding: 8px 10px;
       margin-top: 5%;
       margin-bottom: 5%;
+      margin-left: 10%;
       background:  #42b983;
-      color: white;
+      color: #fff;
       font-weight: bold;
       border: none;
       border-radius: 22px;
