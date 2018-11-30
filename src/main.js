@@ -6,6 +6,10 @@ const fb = require('./firebaseConfig.js')
 
 Vue.config.productionTip = false
 
+Vue.component('modal', {
+  template: '#modal-template'
+})
+
 // handle page reloads
 let app
 fb.auth.onAuthStateChanged(user => {

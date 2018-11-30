@@ -2,19 +2,19 @@
   <div class="dashboard">
     <h1>{{ msg }}</h1>
     <section>
-      <!-- <div class = "row1">
+      <div class = "row1">
         <div class = "profile">
           <h2>{{ userProfile.name }}</h2>
           <p><i>{{ userProfile.email }}</i><p>
             <div class="create-jar">
               <form @submit.prevent>
-                <textarea v-model.trim="post.content"></textarea>
+                <textarea v-model.trim="post.content" placeholder = " Description."></textarea>
                 <!-- <button>Add Jar</button> -->
-              <!-- <button @click="createJar(post.id)" :disabled="post.content == ''">Add Jar</button>
+              <button @click="createJar(post.id)" :disabled="post.content == ''">Add Jar</button>
             </form>
         </div>
       </div>
-    </div> --> -->
+    </div>
       <!-- <img src = "/assets/addjar2.png"></img> -->
       <div class="row2">
         <div v-if="posts.length">
@@ -53,10 +53,8 @@
 <script>
 import { mapState } from 'vuex'
 const fb = require('../firebaseConfig.js')
-// import firebase from 'firebase'
 import moment from 'moment'
 
-// var db = firebase.firestore();
 
 export default {
   name: 'MoneyJarHome',
@@ -69,23 +67,23 @@ export default {
     }
   },
   computed: {
-    ...mapState(['userProfile', 'currentUser', 'users', 'posts', 'hiddenPosts'])
+    ...mapState(['userProfile', 'currentUser', 'posts', 'hiddenPosts'])
   },
   methods: {
-    // createJar(id){
-    //   fb.postsCollection.add({
-    //             createdOn: new Date(),
-    //             content: this.post.content,
-    //             // userId: this.currentUser.uid,
-    //             userName: this.userProfile.name,
-    //             comments: 0,
-    //             likes: 0
-    //        }).then(ref => {
-    //            this.post.content = ''
-    //        }).catch(err => {
-    //            console.log(err)
-    //        })
-    // },
+    createJar(id){
+      fb.postsCollection.add({
+                createdOn: new Date(),
+                content: this.post.content,
+                // userId: this.currentUser.uid,
+                userName: this.userProfile.name,
+                comments: 0,
+                likes: 0
+           }).then(ref => {
+               this.post.content = ''
+           }).catch(err => {
+               console.log(err)
+           })
+    },
     deleteJar(id){
       fb.postsCollection.doc(id).delete().then(function() {
                 console.log("Document successfully deleted!");
@@ -118,6 +116,8 @@ export default {
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
+</script>
+<!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
 .dashboard {
   align-content: center;
@@ -126,6 +126,9 @@ export default {
 }
 h1, h5 {
   font-weight: normal;
+}
+h2, h4 {
+  color: #42b983;
 }
 ul {
   list-style-type: none;
@@ -180,9 +183,11 @@ button{
 }
 .post {
   /* margin: 10%, 10%, 10%, 10; */
+  background-color: rgb(230, 230, 230);
   border-width: 5px;
   border-style: solid;
-  border-color:  #42b983;
+  /* border-color:  #42b983; */
+  border-color: white;
   border-radius: 10px;
   box-sizing: content-box;
 }

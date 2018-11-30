@@ -42,7 +42,7 @@ const fb = require('../firebaseConfig.js')
         z-index: 999;
         background-color: #000;
         /* background-color: #F0DF55; */
-        height: 35%;
+        height: 30%;
         min-height: 80px;
         max-height: 85px;
         position: sticky;
