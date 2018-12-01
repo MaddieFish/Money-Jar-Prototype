@@ -9,6 +9,7 @@
             <div class="create-jar">
               <form @submit.prevent>
                 <textarea v-model.trim="post.content" placeholder = " Description."></textarea>
+                <!-- <input type = "text" v-modal.trim = "post.content" placeholder = "Purpose: food, utility, etc..."></input> -->
               <button @click="createJar(post.id)" :disabled="post.content == ''">Add Jar</button>
             </form>
         </div>
@@ -27,48 +28,14 @@
           <font size = "2px">
             <li><i><a>comments: {{ post.comments }}</a></i></li>
             <li><i><a>likes: {{ post.likes }}</a></i></li>
-            <li><i><a>view full Jar</a></i></li>
-            <li><button class = "permissions" @click="showModal3 = true, preLoad(currentUser.uid, friend.name, friend.email, friend.id, post.id)">Permissions</button></li>
+            <!-- <li><i><a>view full Jar</a></i></li> -->
+            <li><button class = "viewFullJar" @click="viewPost(post)">View Full Jar</button></li>
             <li><button class = "delete" @click="deleteJar(post.id)">Delete Jar</button></li>
           </font>
 
         </ul>
 
-        <div v-if= "showModal3" @close = "showModal3 = false">
 
-          <!-- <div v-if = "friends.length">
-          <div v-for="friend in friends" class="contact" @click= "addPermissions(currentUser.uid, friend.name, friend.email, friend.id, post.id), showModal3 = false">
-                <h3 @click= "addPermissions(currentUser.uid, friend.name, friend.email, friend.id, post.id), showModal3 = false">{{ friend.name }}</h3>
-                <i><h4 class = "email2" @click= "addPermissions(currentUser.uid, friend.name, friend.email, friend.id, post.id), showModal3 = false">{{ friend.email }}</h4></i>
-                </div>
-                </div>
-              <div v-else>
-                <p class="no-results">There are currently no Contacts</p>
-              </div> -->
-
-              <!-- <div class="modal-mask"> -->
-
-                <div class="modal-wrapper">
-              <div class="modal-container">
-              <div v-if="users.length">
-                <div v-for="contact in users" class="contact" @click= "addPermissions(currentUser.uid, contact.name, contact.email, contact.id, post.id), showModal3 = false">
-                      <h3 @click= "addPermissions(currentUser.uid, contact.name, contact.email, contact.id, post.id), showModal3 = false">{{ contact.name }}</h3>
-                      <i><h4 class = "email2" @click= "addPermissions(currentUser.uid, contact.name, contact.email, contact.id, post.id), showModal3 = false">{{ contact.email }}</h4></i>
-                </div>
-                <div class = "modal-footer">
-                <button class="modal-default-button" @click="showModal3 = false">
-                  DONE
-                </button>
-              </div>
-              </div>
-                    <div v-else>
-                      <p class="no-results">There are currently no Contacts</p>
-                    </div>
-
-                  </div>
-                <!-- </div> -->
-              </div>
-            </div>
 
     </div>
 </div>
@@ -79,8 +46,8 @@
 
       </div>
 
-      <!-- <div v-if= "showModal3" @close = "showModal3 = false">
-        <template v-modal = "showModal3" type="text/x-template" id = "modal-template">
+      <div v-if= "showModalPost" @close = "showModalPost = false">
+        <template v-modal = "showModalPost" type="text/x-template" id = "modal-template">
           <transition name="modal">
             <div class="modal-mask">
               <div class="modal-wrapper">
@@ -88,14 +55,34 @@
 
                   <div class="modal-header">
                     <slot name="header">
-                      <h3 slot = "header">Permissions: Add Contacts</h3>
+
+                      <div class ="post">
+                      <h2>{{ fullPost.content }}</h2>
+                      <h3>{{ fullPost.userName }}</h3>
+                      <span>{{ fullPost.createdOn | formatDate }}</span>
+
+                      <ul>
+                        <li><a>comments {{ fullPost.comments }}</a></li>
+                        <li><a>likes {{ fullPost.likes }}</a></li>
+                      </ul>
+                    </div>
+
                     </slot>
                   </div>
 
                   <div class="modal-body">
                     <slot name="body">
 
-                      <div v-if="users.length">
+                      <!-- <div v-show="postComments.length" class="comments">
+                        <div v-for="comment in postComments" class="comment">
+                          <p>{{ comment.userName }}</p>
+                          <span>{{ comment.createdOn | formatDate }}</span>
+                          <p>{{ comment.content }}</p>
+                        </div>
+                      </div> -->
+
+
+                      <!-- <div v-if="users.length">
                         <div v-for="contact in users" class="contact" @click= "addPermissions(currentUser.uid, contact.name, contact.email, contact.id, post.id)">
                               <h3 @click= "addPermissions(currentUser.uid, friend.name, friend.email, friend.id, post.id)">{{ contact.name }}</h3>
                               <i><h4 class = "email2" @click= "addPermissions(currentUser.uid, friend.name, friend.email, friend.id, post.id)">{{ contact.email }}</h4></i>
@@ -103,9 +90,8 @@
                               </div>
                             <div v-else>
                               <p class="no-results">There are currently no Contacts</p>
-                            </div>
-                          </slot>
-                        </div> -->
+                            </div> -->
+
 
                         <!-- <div v-if="userContacts.length">
                           <div v-for="friend in userContacts" class="contact" @click= "addPermissions(currentUser.uid, friend.name, friend.email, friend.id, post.id)">
@@ -115,24 +101,26 @@
                                 </div>
                               <div v-else>
                                 <p class="no-results">There are currently no Contacts</p>
-                              </div>
-                            </slot>
-                          </div> -->
+                              </div> -->
 
-                  <!-- <div class="modal-footer">
+                            </slot>
+                          </div>
+
+                  <div class="modal-footer">
                     <slot name="footer">
-                      <p>Click contact to add as editor and viewer</p>
-                      <button class="modal-default-button" @click="showModal3 = false">
+                      <!-- <p>Click contact to add as editor and viewer</p> -->
+                      <button class="modal-default-button" @click="showModalPost = false">
                         DONE
                       </button>
                     </slot>
                   </div>
+
+                  </div>
                 </div>
               </div>
-            </div>
           </transition>
         </template>
-      </div> -->
+      </div>
 
 
     </section>
@@ -152,10 +140,13 @@ export default {
     return {
       msg: 'Money Jar Dashboard',
       showModal3: false,
+      showModalPost: false,
       userContacts: [],
       post: {
-                content: '',
-            }
+          content: '',
+      },
+      fullPost: {}
+
     }
   },
   computed: {
@@ -183,6 +174,27 @@ export default {
             }).catch(function(error) {
                 console.error("Error removing document: ", error);
             });
+    },
+    viewPost(post) {
+        // fb.commentsCollection.where('postId', '==', post.id).get().then(docs => {
+        //   let commentsArray = []
+        //
+        //   docs.forEach(doc => {
+        //       let comment = doc.data()
+        //       comment.id = doc.id
+        //       commentsArray.push(comment)
+        //   })
+        //
+        //   this.postComments = commentsArray
+          this.fullPost = post
+          this.showModalPost = true
+      // }).catch(err => {
+      //     console.log(err)
+      // }),
+    },
+    closePostModal() {
+    // this.postComments = []
+    this.showModalPost = false
     },
     preLoad(uid, name, email, id, docId){
       fb.contactsCollection.where("contacts", "array-contains", uid).get().then(docs => {
@@ -278,6 +290,7 @@ textarea{
 }
 button{
   padding: 10px 20px;
+  margin-top: 4%;
   margin-bottom: 3%;
   background:  #42b983;
   color: white;
@@ -390,7 +403,7 @@ button{
 }
 
 .modal-body {
-  margin: 20px 0;
+  margin: 10px 0;
   overflow: auto;
   height: 75%;
 }
@@ -400,7 +413,9 @@ button{
 
 .modal-default-button {
   float: right;
+  margin-bottom: 10%;
 }
+
 .modal-enter {
   opacity: 0;
 }
