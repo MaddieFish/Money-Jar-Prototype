@@ -19,7 +19,6 @@
                   <div class="modal-body">
                     <slot name="body">
                       <div v-if="users.length">
-                        <!-- <div v-for="contact in users" class="user" @click ="addContact(currentUser.uid, contact.name, contact.email)"> -->
                         <div v-for="contact in users" class="user" @click ="addContact(currentUser.uid, contact.name, contact.email, contact.id)">
 
                           <h3>{{ contact.name }}</h3>
@@ -47,35 +46,57 @@
         </template>
       </div>
 
-      <!-- <div v-if="userProfile.contacts[0].length"> -->
-        <!-- <div v-for="index in friends" class="contact"> -->
-          <!-- <div class="contact">
-
-          <h3>{{ userProfile.contacts[1].contactName}}</h3>
-        <i><h4 class = "email">{{ userProfile.contacts[1].contactID}}</h4></i>
-    </div>
-    <div class="contact">
-
-    <h3>{{ userProfile.contacts[2].contactName}}</h3>
-  <i><h4 class = "email">{{ userProfile.contacts[2].contactEmail }}</h4></i>
-</div>
-<div class="contact">
-
-</div> -->
-
-  <!-- </div> -->
-<!-- <div v-else>
-  <p class="no-results">There are currently no Contacts</p>
-</div> -->
-
 <div v-if="userContacts.length">
-  <div v-for="friend in userContacts" class="contact">
+  <div v-for="friend in userContacts" class="contact" @click= "showModal2 = true">
         <h3>{{ friend.name }}</h3>
         <i><h4 class = "email2">{{ friend.email }}</h4></i>
         </div>
         </div>
       <div v-else>
         <p class="no-results">There are currently no Users</p>
+      </div>
+
+      <div v-if= "showModal2" @close = "showModal2 = false">
+        <template v-modal = "showModal2" type="text/x-template" id = "modal-template">
+          <transition name="modal">
+            <div class="modal-mask">
+              <div class="modal-wrapper">
+                <div class="modal-container">
+
+                  <div class="modal-header">
+                    <slot name="header">
+                      <h3 slot = "header">Users</h3>
+                    </slot>
+                  </div>
+
+                  <div class="modal-body">
+                    <slot name="body">
+
+                      <div v-if="userContacts.length">
+                        <div v-for="friend in userContacts" class="contact" @click= "deleteContact(currentUser.uid, friend.name, friend.email, friend.id)">
+                              <h3>{{ friend.name }}</h3>
+                              <i><h4 class = "email2">{{ friend.email }}</h4></i>
+                              </div>
+                              </div>
+                            <div v-else>
+                              <p class="no-results">There are currently no Users</p>
+                            </div>
+                          </slot>
+                        </div>
+
+                  <div class="modal-footer">
+                    <slot name="footer">
+                      <p>Click user to delete contact</p>
+                      <button class="modal-default-button" @click="showModal2 = false">
+                        DONE
+                      </button>
+                    </slot>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </transition>
+        </template>
       </div>
 
   </section>
@@ -94,6 +115,7 @@ export default {
     return {
       msg: 'Contacts',
       showModal: false,
+      showModal2: false,
       userContacts: []
 
     }
@@ -119,7 +141,8 @@ export default {
       }),
 
       fb.contactsCollection.doc(id).update({
-          contacts: firebase.firestore.FieldValue.arrayUnion(uid)
+          contacts: firebase.firestore.FieldValue.arrayUnion(uid),
+
           }).then(ref => {
              alert('The user has been added to your contacts')
           }).catch(err => {
@@ -127,12 +150,48 @@ export default {
                     }),
 
       fb.contactsCollection.doc(uid).update({
-          contacts: firebase.firestore.FieldValue.arrayUnion(id)
+          contacts: firebase.firestore.FieldValue.arrayUnion(id),
+
+          }).then(ref => {
+          }).catch(err => {
+             console.log(err)
+                    })
+    },
+
+    deleteContact(uid, name, email, id) {
+
+      fb.contactsCollection.where("contacts", "array-contains", uid).get().then(docs => {
+            let contactsArray = []
+
+            docs.forEach(doc => {
+                let friend = doc.data()
+                friend.id = doc.id
+                contactsArray.push(friend)
+                console.log(friend.id)
+            })
+            this.userContacts = contactsArray
+          }).catch(err => {
+          console.log(err)
+      }),
+
+      fb.contactsCollection.doc(id).update({
+          contacts: firebase.firestore.FieldValue.arrayRemove(uid),
+
+          }).then(ref => {
+             alert('The user has been removed from your contacts')
+          }).catch(err => {
+             console.Log(err)
+                    }),
+
+      fb.contactsCollection.doc(uid).update({
+          contacts: firebase.firestore.FieldValue.arrayRemove(id),
+
           }).then(ref => {
           }).catch(err => {
              console.log(err)
                     })
     }
+
   }
 }
 </script>

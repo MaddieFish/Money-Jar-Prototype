@@ -7,7 +7,7 @@
                     <router-link to="/dashboard">Dashboard</router-link>
                 </li>
                 <li>
-                    <router-link to="/contacts">Contacts</router-link>
+                    <a><router-link to="/contacts">Contacts</router-link></a>
                 </li>
                 <li>
                     <router-link to="/settings">Settings</router-link>
@@ -21,10 +21,14 @@
 </template>
 
 <script>
+import { mapState } from 'vuex'
 const fb = require('../firebaseConfig.js')
 // import firebase from 'firebase'
 
   export default {
+    computed: {
+      ...mapState(['userProfile', 'currentUser', 'users', 'friends'])
+    },
     methods: {
       logout: function() {
         fb.auth.signOut().then(() => {
@@ -32,7 +36,7 @@ const fb = require('../firebaseConfig.js')
           this.$router.push('/login')
           // this.$router.replace('login')
         })
-      }
+      },
     }
   }
 </script>
@@ -76,6 +80,10 @@ const fb = require('../firebaseConfig.js')
     nav > ul > li > a {
         text-decoration: none;
         color: #F0DF55;
+    }
+    a {
+      text-decoration: none;
+      color: #F0DF55;
     }
     button {
       padding: 8px 10px;

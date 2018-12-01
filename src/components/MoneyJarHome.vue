@@ -9,23 +9,14 @@
             <div class="create-jar">
               <form @submit.prevent>
                 <textarea v-model.trim="post.content" placeholder = " Description."></textarea>
-                <!-- <button>Add Jar</button> -->
               <button @click="createJar(post.id)" :disabled="post.content == ''">Add Jar</button>
             </form>
         </div>
       </div>
     </div>
-      <!-- <img src = "/assets/addjar2.png"></img> -->
       <div class="row2">
         <div v-if="posts.length">
-          <!-- <transition name="fade">
-            <div v-if="hiddenPosts.length" @click="showNewJars" class="hidden-posts">
-                <p>
-                    Click to show <span class="new-posts">{{ hiddenPosts.length }}</span>
-                    new <span v-if="hiddenPosts.length > 1">posts</span><span v-else>post</span>
-                </p>
-            </div>
-        </transition> -->
+
           <div v-for="post in posts" class="post">
         <h4>{{ post.userName }}</h4>
         <font size = "2px">
@@ -89,9 +80,8 @@ export default {
             }).catch(function(error) {
                 console.error("Error removing document: ", error);
             });
-
     },
-  
+
   },
   filters: {
     formatDate(val) {
