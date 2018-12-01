@@ -28,18 +28,58 @@
             <li><i><a>comments: {{ post.comments }}</a></i></li>
             <li><i><a>likes: {{ post.likes }}</a></i></li>
             <li><i><a>view full Jar</a></i></li>
-            <li><button class = "permissions" @click="showModal3 = true">Permissions</button></li>
+            <li><button class = "permissions" @click="showModal3 = true, preLoad(currentUser.uid, friend.name, friend.email, friend.id, post.id)">Permissions</button></li>
             <li><button class = "delete" @click="deleteJar(post.id)">Delete Jar</button></li>
           </font>
+
         </ul>
+
+        <div v-if= "showModal3" @close = "showModal3 = false">
+
+          <!-- <div v-if = "friends.length">
+          <div v-for="friend in friends" class="contact" @click= "addPermissions(currentUser.uid, friend.name, friend.email, friend.id, post.id), showModal3 = false">
+                <h3 @click= "addPermissions(currentUser.uid, friend.name, friend.email, friend.id, post.id), showModal3 = false">{{ friend.name }}</h3>
+                <i><h4 class = "email2" @click= "addPermissions(currentUser.uid, friend.name, friend.email, friend.id, post.id), showModal3 = false">{{ friend.email }}</h4></i>
+                </div>
+                </div>
+              <div v-else>
+                <p class="no-results">There are currently no Contacts</p>
+              </div> -->
+
+              <!-- <div class="modal-mask"> -->
+
+                <div class="modal-wrapper">
+              <div class="modal-container">
+              <div v-if="users.length">
+                <div v-for="contact in users" class="contact" @click= "addPermissions(currentUser.uid, contact.name, contact.email, contact.id, post.id), showModal3 = false">
+                      <h3 @click= "addPermissions(currentUser.uid, contact.name, contact.email, contact.id, post.id), showModal3 = false">{{ contact.name }}</h3>
+                      <i><h4 class = "email2" @click= "addPermissions(currentUser.uid, contact.name, contact.email, contact.id, post.id), showModal3 = false">{{ contact.email }}</h4></i>
+                </div>
+                <div class = "modal-footer">
+                <button class="modal-default-button" @click="showModal3 = false">
+                  DONE
+                </button>
+              </div>
+              </div>
+                    <div v-else>
+                      <p class="no-results">There are currently no Contacts</p>
+                    </div>
+
+                  </div>
+                <!-- </div> -->
+              </div>
+            </div>
+
     </div>
 </div>
+
 <div v-else>
     <p class="no-results">There are currently no Jars</p>
 </div>
+
       </div>
 
-      <div v-if= "showModal3" @close = "showModal3 = false">
+      <!-- <div v-if= "showModal3" @close = "showModal3 = false">
         <template v-modal = "showModal3" type="text/x-template" id = "modal-template">
           <transition name="modal">
             <div class="modal-mask">
@@ -55,19 +95,31 @@
                   <div class="modal-body">
                     <slot name="body">
 
-                      <div v-if="userContacts.length">
-                        <div v-for="friend in userContacts" class="contact" @click= "addPermissions(currentUser.uid, friend.name, friend.email, friend.id)">
-                              <h3 @click= "addPermissions(currentUser.uid, friend.name, friend.email, friend.id)">{{ friend.name }}</h3>
-                              <i><h4 class = "email2" @click= "addPermissions(currentUser.uid, friend.name, friend.email, friend.id)">{{ friend.email }}</h4></i>
+                      <div v-if="users.length">
+                        <div v-for="contact in users" class="contact" @click= "addPermissions(currentUser.uid, contact.name, contact.email, contact.id, post.id)">
+                              <h3 @click= "addPermissions(currentUser.uid, friend.name, friend.email, friend.id, post.id)">{{ contact.name }}</h3>
+                              <i><h4 class = "email2" @click= "addPermissions(currentUser.uid, friend.name, friend.email, friend.id, post.id)">{{ contact.email }}</h4></i>
                               </div>
                               </div>
                             <div v-else>
                               <p class="no-results">There are currently no Contacts</p>
                             </div>
                           </slot>
-                        </div>
+                        </div> -->
 
-                  <div class="modal-footer">
+                        <!-- <div v-if="userContacts.length">
+                          <div v-for="friend in userContacts" class="contact" @click= "addPermissions(currentUser.uid, friend.name, friend.email, friend.id, post.id)">
+                                <h3 @click= "addPermissions(currentUser.uid, friend.name, friend.email, friend.id, post.id)">{{ contact.name }}</h3>
+                                <i><h4 class = "email2" @click= "addPermissions(currentUser.uid, friend.name, friend.email, friend.id, post.id)">{{ contact.email }}</h4></i>
+                                </div>
+                                </div>
+                              <div v-else>
+                                <p class="no-results">There are currently no Contacts</p>
+                              </div>
+                            </slot>
+                          </div> -->
+
+                  <!-- <div class="modal-footer">
                     <slot name="footer">
                       <p>Click contact to add as editor and viewer</p>
                       <button class="modal-default-button" @click="showModal3 = false">
@@ -80,7 +132,7 @@
             </div>
           </transition>
         </template>
-      </div>
+      </div> -->
 
 
     </section>
@@ -132,29 +184,44 @@ export default {
                 console.error("Error removing document: ", error);
             });
     },
-    addPermissions(uid, name, email, id){
+    preLoad(uid, name, email, id, docId){
       fb.contactsCollection.where("contacts", "array-contains", uid).get().then(docs => {
             let contactsArray = []
-
             docs.forEach(doc => {
                 let friend = doc.data()
                 friend.id = doc.id
                 contactsArray.push(friend)
+                console.log(friend.id)
+            })
+            this.userContacts = contactsArray
+          }).catch(err => {
+          console.log(err)
+      })
+    },
+
+    addPermissions(uid, name, email, id, docId){
+      fb.contactsCollection.where("contacts", "array-contains", uid).get().then(docs => {
+            let contactsArray = []
+            docs.forEach(doc => {
+                let friend = doc.data()
+                friend.id = doc.id
+                contactsArray.push(friend)
+                console.log(friend.id)
             })
             this.userContacts = contactsArray
           }).catch(err => {
           console.log(err)
       }),
 
-      fb.postsCollection.doc(id).update({
+      fb.postsCollection.doc(docId).update({
           viewers: firebase.firestore.FieldValue.arrayUnion(uid, id),
           editors: firebase.firestore.FieldValue.arrayUnion(uid, id),
 
           }).then(ref => {
              // alert('The user has been added to your contacts')
           }).catch(err => {
-             console.Log(err)
-                    })
+             console.log(err)
+      })
 
     }
   },

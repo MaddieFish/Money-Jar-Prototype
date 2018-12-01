@@ -108,8 +108,10 @@
 import { mapState } from 'vuex'
 const fb = require('../firebaseConfig.js')
 import firebase from 'firebase'
+
 export default {
   name: 'Contacts',
+
   data () {
     return {
       msg: 'Contacts',

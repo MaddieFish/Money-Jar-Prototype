@@ -38,14 +38,14 @@ fb.auth.onAuthStateChanged(user => {
         }),
 
         // realtime updates from our posts collection
-        fb.contactsCollection.orderBy('createdOn', 'desc').onSnapshot(querySnapshot => {
+        fb.contactsCollection.where("contacts", "array-contains", user.uid).orderBy('createdOn', 'desc').onSnapshot(querySnapshot => {
             let contactsArray = []
 
             querySnapshot.forEach(doc => {
                 let friend = doc.data()
                 friend.id = doc.id
                 contactsArray.push(friend)
-                // console.log(post.id)
+                console.log(friend.id)
             })
             store.commit('setUserContacts', contactsArray)
         })
