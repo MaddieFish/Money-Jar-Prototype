@@ -20,8 +20,7 @@ const fb = require('../firebaseConfig.js')
         signupForm: {
           name: '',
           email: '',
-          password: '',
-          contacts: []
+          password: ''
         }
       }
     },
@@ -36,20 +35,11 @@ const fb = require('../firebaseConfig.js')
            fb.usersCollection.doc(user.user.uid).set({
              name: this.signupForm.name,
               email: this.signupForm.email,
-              contacts: this.signupForm.contacts
+              friends: this.signupForm.friends
              }).then(() => {
               this.$router.push('/dashboard')
               this.$store.dispatch('fetchUserProfile')
               alert('Your user has been created!')
-           }).catch(err => {
-              alert('Please try again. ' + err.message)
-           }),
-
-           fb.contactsCollection.doc(user.user.uid).set({
-             name: this.signupForm.name,
-              email: this.signupForm.email,
-              contacts: this.signupForm.contacts
-             }).then(() => {
            }).catch(err => {
               alert('Please try again. ' + err.message)
            })

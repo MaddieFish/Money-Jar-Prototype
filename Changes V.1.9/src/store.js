@@ -10,6 +10,7 @@ fb.auth.onAuthStateChanged(user => {
     if (user) {
         store.commit('setCurrentUser', user)
         store.dispatch('fetchUserProfile')
+        // store.dispatch('getUserContacts')
 
         // realtime updates from our users collection
         fb.usersCollection.orderBy('name', 'desc').onSnapshot(querySnapshot => {
@@ -23,6 +24,20 @@ fb.auth.onAuthStateChanged(user => {
             })
             store.commit('setUsers', usersArray)
         }),
+
+        // realtime updates from our users collection
+        // fb.usersCollection.where("contacts", "array-contains", userProfile.uid).orderBy('name', 'desc').onSnapshot(querySnapshot => {
+        //     let friendsArray = []
+        //
+        //     querySnapshot.forEach(doc => {
+        //         let friend = doc.data()
+        //         friend.id = doc.id
+        //         friendsArray.push(friend)
+        //         // console.log(contact.id)
+        //     })
+        //     store.commit('setFriends', friendsArray)
+        // }),
+
 
         // realtime updates from our posts collection
         fb.postsCollection.orderBy('createdOn', 'desc').onSnapshot(querySnapshot => {
@@ -45,7 +60,8 @@ export const store = new Vuex.Store({
           currentUser: null,
           userProfile: {},
           users: [],
-          posts: []
+          posts: [],
+          friends: []
           // hiddenPosts: []
   },
   actions: {
@@ -53,7 +69,8 @@ export const store = new Vuex.Store({
         commit('setUsers', null),
         commit('setCurrentUser', null),
         commit('setUserProfile', {}),
-        commit('setPosts', null)
+        commit('setPosts', null),
+        commit('setFriends', null)
         // commit('setHiddenPosts', null)
       },
 
@@ -77,8 +94,10 @@ export const store = new Vuex.Store({
       },
       setUsers(state, val) {
         state.users = val
+      },
+      setFriends(state, val) {
+        state.friends = val
       }
-
       // setHiddenPosts(state, val) {
       //       if (val) {
       //           // make sure not to add duplicates

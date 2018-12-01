@@ -70,13 +70,14 @@
 
 <div v-if="userContacts.length">
   <div v-for="friend in userContacts" class="contact">
-        <h3>{{ friend.name }}</h3>
-        <i><h4 class = "email2">{{ friend.email }}</h4></i>
-        </div>
-        </div>
-      <div v-else>
-        <p class="no-results">There are currently no Users</p>
-      </div>
+
+    <h3>{{ friend.name }}</h3>
+    <i><h4 class = "email2">{{ friend.email }}</h4></i>
+    </div>
+</div>
+  <div v-else>
+    <p class="no-results">There are currently no Users</p>
+  </div>
 
   </section>
     </div>
@@ -99,39 +100,69 @@ export default {
     }
   },
   computed: {
-    ...mapState(['userProfile', 'currentUser', 'users', 'friends'])
+    ...mapState(['userProfile', 'currentUser', 'users'])
   },
   methods: {
     addContact(uid, name, email, id) {
 
-      fb.contactsCollection.where("contacts", "array-contains", uid).get().then(docs => {
-            let contactsArray = []
+      // fb.usersCollection.doc(uid).update({
+      //       friendsID: firebase.firestore.FieldValue.arrayUnion(id),
+      //       friendsName: firebase.firestore.FieldValue.arrayUnion(name),
+      //       friendsEmail: firebase.firestore.FieldValue.arrayUnion(email),
+      //
+      //       "contacts.contactsID": firebase.firestore.FieldValue.arrayUnion(id),
+      //       // cid: firebase.firestore.FieldValue.arrayUnion(id),
+      //       "contacts.contactsName": firebase.firestore.FieldValue.arrayUnion(name),
+      //       "contacts.contactsEmail": firebase.firestore.FieldValue.arrayUnion(email)
+      //
+      //     }).then(ref => {
+      //         alert('The user has been added to your contacts')
+      //     }).catch(err => {
+      //         console.log(err)
+      //     })
 
-            docs.forEach(doc => {
-                let friend = doc.data()
-                friend.id = doc.id
-                contactsArray.push(friend)
-                console.log(friend.id)
-            })
-            this.userContacts = contactsArray
-          }).catch(err => {
-          console.log(err)
+      // fb.usersCollection.doc(uid).update({
+      //       contacts: firebase.firestore.FieldValue.arrayUnion({
+      //         contactName: name,
+      //         contactEmail: email,
+      //         contactID: id
+      //       }
+      //       )
+      //
+      //     }).then(ref => {
+      //         alert('The user has been added to your contacts')
+      //     }).catch(err => {
+      //         console.log(err)
+      //     })
+
+      // realtime updates from our users collection
+      fb.contactsCollection.where("contacts", "array-contains", uid).orderBy.get().then(docs => {
+          let contactsArray = []
+
+          docs.forEach(doc => {
+              let friend = doc.data()
+              friend.id = doc.id
+              contactsArray.push(friend)
+              // console.log(contact.id)
+          })
+          store.commit('setFriends', contactsArray)
+          this.userContacts = contactsArray
       }),
 
-      fb.contactsCollection.doc(id).update({
-          contacts: firebase.firestore.FieldValue.arrayUnion(uid)
+      fb.usersCollection.doc(id).update({
+            contacts: firebase.firestore.FieldValue.arrayUnion(uid)
           }).then(ref => {
-             alert('The user has been added to your contacts')
+              alert('The user has been added to your contacts')
           }).catch(err => {
-             console.Log(err)
-                    }),
-
-      fb.contactsCollection.doc(uid).update({
-          contacts: firebase.firestore.FieldValue.arrayUnion(id)
-          }).then(ref => {
-          }).catch(err => {
-             console.log(err)
-                    })
+              console.log(err)
+          }),
+          fb.usersCollection.doc(uid).update({
+                contacts: firebase.firestore.FieldValue.arrayUnion(id)
+              }).then(ref => {
+                  alert('The user has been added to your contacts')
+              }).catch(err => {
+                  console.log(err)
+              })
     }
   }
 }
