@@ -21,8 +21,8 @@
                       <div v-if="users.length">
                         <div v-for="contact in users" class="user" @click ="addContact(currentUser.uid, contact.name, contact.email, contact.id)">
 
-                          <h3>{{ contact.name }}</h3>
-                      <i><h4 class = "email2">{{ contact.email }}</h4></i>
+                          <h3 @click ="addContact(currentUser.uid, contact.name, contact.email, contact.id)">{{ contact.name }}</h3>
+                      <i><h4 class = "email2" @click ="addContact(currentUser.uid, contact.name, contact.email, contact.id)">{{ contact.email }}</h4></i>
                   </div>
                 </div>
                 <div v-else>
@@ -74,8 +74,8 @@
 
                       <div v-if="userContacts.length">
                         <div v-for="friend in userContacts" class="contact" @click= "deleteContact(currentUser.uid, friend.name, friend.email, friend.id)">
-                              <h3>{{ friend.name }}</h3>
-                              <i><h4 class = "email2">{{ friend.email }}</h4></i>
+                              <h3 @click= "deleteContact(currentUser.uid, friend.name, friend.email, friend.id)">{{ friend.name }}</h3>
+                              <i><h4 class = "email2" @click= "deleteContact(currentUser.uid, friend.name, friend.email, friend.id)">{{ friend.email }}</h4></i>
                               </div>
                               </div>
                             <div v-else>
@@ -144,7 +144,7 @@ export default {
           contacts: firebase.firestore.FieldValue.arrayUnion(uid),
 
           }).then(ref => {
-             alert('The user has been added to your contacts')
+             // alert('The user has been added to your contacts')
           }).catch(err => {
              console.Log(err)
                     }),
@@ -178,7 +178,7 @@ export default {
           contacts: firebase.firestore.FieldValue.arrayRemove(uid),
 
           }).then(ref => {
-             alert('The user has been removed from your contacts')
+             // alert('The user has been removed from your contacts')
           }).catch(err => {
              console.Log(err)
                     }),
