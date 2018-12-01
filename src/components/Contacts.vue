@@ -46,16 +46,6 @@
         </template>
       </div>
 
-<div v-if="userContacts.length">
-  <div v-for="friend in userContacts" class="contact" @click= "showModal2 = true">
-        <h3>{{ friend.name }}</h3>
-        <i><h4 class = "email2">{{ friend.email }}</h4></i>
-        </div>
-        </div>
-      <div v-else>
-        <p class="no-results">There are currently no Users</p>
-      </div>
-
       <div v-if= "showModal2" @close = "showModal2 = false">
         <template v-modal = "showModal2" type="text/x-template" id = "modal-template">
           <transition name="modal">
@@ -121,7 +111,7 @@ export default {
     }
   },
   computed: {
-    ...mapState(['userProfile', 'currentUser', 'users', 'friends'])
+    ...mapState(['userProfile', 'currentUser', 'users'])
   },
   methods: {
     addContact(uid, name, email, id) {
@@ -133,7 +123,6 @@ export default {
                 let friend = doc.data()
                 friend.id = doc.id
                 contactsArray.push(friend)
-                console.log(friend.id)
             })
             this.userContacts = contactsArray
           }).catch(err => {
@@ -297,16 +286,6 @@ p {
 .modal-default-button {
   float: right;
 }
-
-/*
- * The following styles are auto-applied to elements with
- * transition="modal" when their visibility is toggled
- * by Vue.js.
- *
- * You can easily play with the modal transition by editing
- * these styles.
- */
-
 .modal-enter {
   opacity: 0;
 }
@@ -314,10 +293,4 @@ p {
 .modal-leave-active {
   opacity: 0;
 }
-
-/* .modal-enter .modal-container,
-.modal-leave-active .modal-container {
-  -webkit-transform: scale(1.1);
-  transform: scale(1.1);
-} */
 </style>

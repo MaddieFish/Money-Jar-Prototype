@@ -28,6 +28,7 @@
             <li><i><a>comments: {{ post.comments }}</a></i></li>
             <li><i><a>likes: {{ post.likes }}</a></i></li>
             <li><i><a>view full Jar</a></i></li>
+            <li><button class = "permissions" @click="showModal3 = true">Permissions</button></li>
             <li><button class = "delete" @click="deleteJar(post.id)">Delete Jar</button></li>
           </font>
         </ul>
@@ -37,6 +38,51 @@
     <p class="no-results">There are currently no Jars</p>
 </div>
       </div>
+
+      <div v-if= "showModal3" @close = "showModal3 = false">
+        <template v-modal = "showModal3" type="text/x-template" id = "modal-template">
+          <transition name="modal">
+            <div class="modal-mask">
+              <div class="modal-wrapper">
+                <div class="modal-container">
+
+                  <div class="modal-header">
+                    <slot name="header">
+                      <h3 slot = "header">Permissions: Add Contacts</h3>
+                    </slot>
+                  </div>
+
+                  <div class="modal-body">
+                    <slot name="body">
+
+                      <div v-if="userContacts.length">
+                        <div v-for="friend in userContacts" class="contact" @click= "addPermissions(currentUser.uid, friend.name, friend.email, friend.id)">
+                              <h3 @click= "addPermissions(currentUser.uid, friend.name, friend.email, friend.id)">{{ friend.name }}</h3>
+                              <i><h4 class = "email2" @click= "addPermissions(currentUser.uid, friend.name, friend.email, friend.id)">{{ friend.email }}</h4></i>
+                              </div>
+                              </div>
+                            <div v-else>
+                              <p class="no-results">There are currently no Contacts</p>
+                            </div>
+                          </slot>
+                        </div>
+
+                  <div class="modal-footer">
+                    <slot name="footer">
+                      <p>Click contact to add as editor and viewer</p>
+                      <button class="modal-default-button" @click="showModal3 = false">
+                        DONE
+                      </button>
+                    </slot>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </transition>
+        </template>
+      </div>
+
+
     </section>
   </div>
 </template>
@@ -44,6 +90,7 @@
 <script>
 import { mapState } from 'vuex'
 const fb = require('../firebaseConfig.js')
+import firebase from 'firebase'
 import moment from 'moment'
 
 
@@ -52,13 +99,15 @@ export default {
   data () {
     return {
       msg: 'Money Jar Dashboard',
+      showModal3: false,
+      userContacts: [],
       post: {
                 content: '',
             }
     }
   },
   computed: {
-    ...mapState(['userProfile', 'currentUser', 'posts', 'hiddenPosts'])
+    ...mapState(['userProfile', 'currentUser', 'posts', 'users'])
   },
   methods: {
     createJar(id){
@@ -67,7 +116,9 @@ export default {
                 content: this.post.content,
                 userName: this.userProfile.name,
                 comments: 0,
-                likes: 0
+                likes: 0,
+                viewers: [],
+                editors: []
            }).then(ref => {
                this.post.content = ''
            }).catch(err => {
@@ -81,7 +132,31 @@ export default {
                 console.error("Error removing document: ", error);
             });
     },
+    addPermissions(uid, name, email, id){
+      fb.contactsCollection.where("contacts", "array-contains", uid).get().then(docs => {
+            let contactsArray = []
 
+            docs.forEach(doc => {
+                let friend = doc.data()
+                friend.id = doc.id
+                contactsArray.push(friend)
+            })
+            this.userContacts = contactsArray
+          }).catch(err => {
+          console.log(err)
+      }),
+
+      fb.postsCollection.doc(id).update({
+          viewers: firebase.firestore.FieldValue.arrayUnion(uid, id),
+          editors: firebase.firestore.FieldValue.arrayUnion(uid, id),
+
+          }).then(ref => {
+             // alert('The user has been added to your contacts')
+          }).catch(err => {
+             console.Log(err)
+                    })
+
+    }
   },
   filters: {
     formatDate(val) {
@@ -156,6 +231,17 @@ button{
   outline: 0;
   cursor: pointer;
 }
+.permissions{
+  padding: 10px 20px;
+  margin-top: 10%;
+  background: #42b983;
+  color: white;
+  font-weight: bold;
+  border: none;
+  border-radius: 22px;
+  outline: 0;
+  cursor: pointer;
+}
 .row1 {
   /* width:40%; */
   height: 20%;
@@ -181,5 +267,78 @@ button{
   border-color:  #42b983;
   border-radius: 10px;
   box-sizing: content-box;
+}
+.contact {
+  /* margin: 10%, 10%, 10%, 10; */
+  color: white;
+  background-color: #42b983;
+  border-width: 5px;
+  border-style: solid;
+  border-color:  white;
+  border-radius: 10px;
+  box-sizing: content-box;
+}
+.user {
+  /* margin: 10%, 10%, 10%, 10; */
+  color: white;
+  border-width: 4px;
+  border-style: solid;
+  border-color: white;
+  border-radius: 10px;
+  box-sizing: content-box;
+  background-color: #EA5656;
+}
+.email {
+  color: #F0DF55;
+}
+.email2 {
+  color: 	white;
+}
+.modal-mask {
+  position: fixed;
+  z-index: 9998;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, .5);
+  display: inline-table;
+  transition: opacity .3s ease;
+}
+.modal-container {
+  height: 60%;
+  width: 300px;
+  margin: 0px auto;
+  padding: 5% 8%;
+  background-color: #fff;
+  border-radius: 2px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, .33);
+  transition: all .3s ease;
+  font-family: Helvetica, Arial, sans-serif;
+}
+
+.modal-header h3 {
+  margin-top: 0;
+  color: #42b983;
+}
+
+.modal-body {
+  margin: 20px 0;
+  overflow: auto;
+  height: 75%;
+}
+.model-footer {
+  height: 10%;
+}
+
+.modal-default-button {
+  float: right;
+}
+.modal-enter {
+  opacity: 0;
+}
+
+.modal-leave-active {
+  opacity: 0;
 }
 </style>
