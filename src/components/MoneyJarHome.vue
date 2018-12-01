@@ -107,7 +107,7 @@ export default {
     }
   },
   computed: {
-    ...mapState(['userProfile', 'currentUser', 'posts', 'users'])
+    ...mapState(['userProfile', 'currentUser', 'posts', 'users', 'friends'])
   },
   methods: {
     createJar(id){
@@ -309,7 +309,7 @@ button{
   height: 60%;
   width: 300px;
   margin: 0px auto;
-  padding: 5% 8%;
+  padding: 13% 8%;
   background-color: #fff;
   border-radius: 2px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, .33);

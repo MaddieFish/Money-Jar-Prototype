@@ -46,6 +46,16 @@
         </template>
       </div>
 
+<div v-if="userContacts.length">
+  <div v-for="friend in userContacts" class="contact" @click= "showModal2 = true">
+        <h3>{{ friend.name }}</h3>
+        <i><h4 class = "email2">{{ friend.email }}</h4></i>
+        </div>
+        </div>
+      <div v-else>
+        <p class="no-results">There are currently no Users</p>
+      </div>
+
       <div v-if= "showModal2" @close = "showModal2 = false">
         <template v-modal = "showModal2" type="text/x-template" id = "modal-template">
           <transition name="modal">
@@ -98,7 +108,6 @@
 import { mapState } from 'vuex'
 const fb = require('../firebaseConfig.js')
 import firebase from 'firebase'
-
 export default {
   name: 'Contacts',
   data () {
@@ -107,51 +116,15 @@ export default {
       showModal: false,
       showModal2: false,
       userContacts: []
-
     }
   },
   computed: {
-    ...mapState(['userProfile', 'currentUser', 'users'])
+    ...mapState(['userProfile', 'currentUser', 'users', 'friends'])
   },
   methods: {
     addContact(uid, name, email, id) {
-
       fb.contactsCollection.where("contacts", "array-contains", uid).get().then(docs => {
             let contactsArray = []
-
-            docs.forEach(doc => {
-                let friend = doc.data()
-                friend.id = doc.id
-                contactsArray.push(friend)
-            })
-            this.userContacts = contactsArray
-          }).catch(err => {
-          console.log(err)
-      }),
-
-      fb.contactsCollection.doc(id).update({
-          contacts: firebase.firestore.FieldValue.arrayUnion(uid),
-
-          }).then(ref => {
-             // alert('The user has been added to your contacts')
-          }).catch(err => {
-             console.Log(err)
-                    }),
-
-      fb.contactsCollection.doc(uid).update({
-          contacts: firebase.firestore.FieldValue.arrayUnion(id),
-
-          }).then(ref => {
-          }).catch(err => {
-             console.log(err)
-                    })
-    },
-
-    deleteContact(uid, name, email, id) {
-
-      fb.contactsCollection.where("contacts", "array-contains", uid).get().then(docs => {
-            let contactsArray = []
-
             docs.forEach(doc => {
                 let friend = doc.data()
                 friend.id = doc.id
@@ -162,25 +135,47 @@ export default {
           }).catch(err => {
           console.log(err)
       }),
-
+      fb.contactsCollection.doc(id).update({
+          contacts: firebase.firestore.FieldValue.arrayUnion(uid),
+          }).then(ref => {
+             // alert('The user has been added to your contacts')
+          }).catch(err => {
+             console.Log(err)
+                    }),
+      fb.contactsCollection.doc(uid).update({
+          contacts: firebase.firestore.FieldValue.arrayUnion(id),
+          }).then(ref => {
+          }).catch(err => {
+             console.log(err)
+                    })
+    },
+    deleteContact(uid, name, email, id) {
+      fb.contactsCollection.where("contacts", "array-contains", uid).get().then(docs => {
+            let contactsArray = []
+            docs.forEach(doc => {
+                let friend = doc.data()
+                friend.id = doc.id
+                contactsArray.push(friend)
+                console.log(friend.id)
+            })
+            this.userContacts = contactsArray
+          }).catch(err => {
+          console.log(err)
+      }),
       fb.contactsCollection.doc(id).update({
           contacts: firebase.firestore.FieldValue.arrayRemove(uid),
-
           }).then(ref => {
              // alert('The user has been removed from your contacts')
           }).catch(err => {
              console.Log(err)
                     }),
-
       fb.contactsCollection.doc(uid).update({
           contacts: firebase.firestore.FieldValue.arrayRemove(id),
-
           }).then(ref => {
           }).catch(err => {
              console.log(err)
                     })
     }
-
   }
 }
 </script>
@@ -254,12 +249,10 @@ p {
   display: inline-table;
   transition: opacity .3s ease;
 }
-
 .modal-wrapper {
   display: table-cell;
   vertical-align: middle;
 }
-
 .modal-container {
   height: 50%;
   width: 300px;
@@ -271,26 +264,24 @@ p {
   transition: all .3s ease;
   font-family: Helvetica, Arial, sans-serif;
 }
-
 .modal-header h3 {
   margin-top: 0;
   color: #42b983;
 }
-
 .modal-body {
   margin: 20px 0;
   overflow: auto;
   height: 75%;
 }
-
 .modal-default-button {
   float: right;
 }
+
 .modal-enter {
   opacity: 0;
 }
-
 .modal-leave-active {
   opacity: 0;
 }
+
 </style>

@@ -35,6 +35,19 @@ fb.auth.onAuthStateChanged(user => {
                 // console.log(post.id)
             })
             store.commit('setPosts', postsArray)
+        }),
+
+        // realtime updates from our posts collection
+        fb.contactsCollection.orderBy('createdOn', 'desc').onSnapshot(querySnapshot => {
+            let contactsArray = []
+
+            querySnapshot.forEach(doc => {
+                let friend = doc.data()
+                friend.id = doc.id
+                contactsArray.push(friend)
+                // console.log(post.id)
+            })
+            store.commit('setUserContacts', contactsArray)
         })
 
     }
@@ -45,16 +58,16 @@ export const store = new Vuex.Store({
           currentUser: null,
           userProfile: {},
           users: [],
-          posts: []
-          // hiddenPosts: []
+          posts: [],
+          friends: []
   },
   actions: {
       clearData({ commit }) {
         commit('setUsers', null),
         commit('setCurrentUser', null),
         commit('setUserProfile', {}),
-        commit('setPosts', null)
-        // commit('setHiddenPosts', null)
+        commit('setPosts', null),
+        commit('setUserContacts', null)
       },
 
       fetchUserProfile({ commit, state }) {
@@ -77,17 +90,10 @@ export const store = new Vuex.Store({
       },
       setUsers(state, val) {
         state.users = val
+      },
+      setUserContacts(state, val) {
+        state.friends =val
       }
 
-      // setHiddenPosts(state, val) {
-      //       if (val) {
-      //           // make sure not to add duplicates
-      //           if (!state.hiddenPosts.some(x => x.id === val.id)) {
-      //               state.hiddenPosts.unshift(val)
-      //           }
-      //       } else {
-      //           state.hiddenPosts = []
-      //       }
-      //   }
   }
 });
