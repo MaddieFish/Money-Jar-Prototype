@@ -34,8 +34,9 @@ const fb = require('../firebaseConfig.js')
            // create user obj
            fb.usersCollection.doc(user.user.uid).set({
              name: this.signupForm.name,
-            email: this.signupForm.email
-           }).then(() => {
+              email: this.signupForm.email,
+              friends: this.signupForm.friends
+             }).then(() => {
               this.$router.push('/dashboard')
               this.$store.dispatch('fetchUserProfile')
               alert('Your user has been created!')

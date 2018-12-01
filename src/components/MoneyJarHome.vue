@@ -74,7 +74,6 @@ export default {
       fb.postsCollection.add({
                 createdOn: new Date(),
                 content: this.post.content,
-                // userId: this.currentUser.uid,
                 userName: this.userProfile.name,
                 comments: 0,
                 likes: 0
@@ -92,12 +91,7 @@ export default {
             });
 
     },
-    // showNewJars() {
-    //   let updatedPostsArray = this.hiddenPosts.concat(this.posts)
-    //   // clear hideenPosts array and update posts array
-    //   this.$store.commit('setHiddenPosts', null)
-    //   this.$store.commit('setPosts', updatedPostsArray)
-    // }
+  
   },
   filters: {
     formatDate(val) {

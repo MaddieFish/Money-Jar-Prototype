@@ -19,7 +19,9 @@
                   <div class="modal-body">
                     <slot name="body">
                       <div v-if="users.length">
-                        <div v-for="contact in users" class="user" @click ="addContact">
+                        <!-- <div v-for="contact in users" class="user" @click ="addContact(currentUser.uid, contact.name, contact.email)"> -->
+                        <div v-for="contact in users" class="user" @click ="addContact(currentUser.uid, contact.name, contact.email, contact.id)">
+
                           <h3>{{ contact.name }}</h3>
                       <i><h4 class = "email2">{{ contact.email }}</h4></i>
                   </div>
@@ -45,15 +47,26 @@
         </template>
       </div>
 
-      <div v-if="users.length">
-        <div v-for="contact in users" class="contact">
-      <h3>{{ contact.name }}</h3>
-      <i><h4 class = "email">{{ contact.email }}</h4></i>
-  </div>
+      <!-- <div v-if="userProfile.contacts[0].length"> -->
+        <!-- <div v-for="index in friends" class="contact"> -->
+          <div class="contact">
+
+          <h3>{{ userProfile.contacts[1].contactName}}</h3>
+        <i><h4 class = "email">{{ userProfile.contacts[1].contactID}}</h4></i>
+    </div>
+    <div class="contact">
+
+    <h3>{{ userProfile.contacts[2].contactName}}</h3>
+  <i><h4 class = "email">{{ userProfile.contacts[2].contactEmail }}</h4></i>
 </div>
-<div v-else>
-  <p class="no-results">There are currently no Users</p>
+<div class="contact">
+
 </div>
+
+  <!-- </div> -->
+<!-- <div v-else>
+  <p class="no-results">There are currently no Contacts</p>
+</div> -->
 
   </section>
     </div>
@@ -63,7 +76,7 @@
 <script>
 import { mapState } from 'vuex'
 const fb = require('../firebaseConfig.js')
-// import firebase from 'firebase'
+import firebase from 'firebase'
 
 export default {
   name: 'Contacts',
@@ -71,19 +84,49 @@ export default {
     return {
       msg: 'Contacts',
       showModal: false
+
     }
   },
   computed: {
-    ...mapState(['userProfile', 'currentUser', 'users'])
+    ...mapState(['userProfile', 'currentUser', 'users', 'friends'])
   },
   methods: {
-    addContact: function(){
+    addContact(uid, name, email, id) {
+
+      // fb.usersCollection.doc(uid).update({
+      //       friendsID: firebase.firestore.FieldValue.arrayUnion(id),
+      //       friendsName: firebase.firestore.FieldValue.arrayUnion(name),
+      //       friendsEmail: firebase.firestore.FieldValue.arrayUnion(email),
+      //
+      //       "contacts.contactsID": firebase.firestore.FieldValue.arrayUnion(id),
+      //       // cid: firebase.firestore.FieldValue.arrayUnion(id),
+      //       "contacts.contactsName": firebase.firestore.FieldValue.arrayUnion(name),
+      //       "contacts.contactsEmail": firebase.firestore.FieldValue.arrayUnion(email)
+      //
+      //     }).then(ref => {
+      //         alert('The user has been added to your contacts')
+      //     }).catch(err => {
+      //         console.log(err)
+      //     })
+
+      fb.usersCollection.doc(uid).update({
+            contacts: firebase.firestore.FieldValue.arrayUnion({
+              contactName: name,
+              contactEmail: email,
+              contactID: id
+            }
+            )
+
+          }).then(ref => {
+              alert('The user has been added to your contacts')
+          }).catch(err => {
+              console.log(err)
+          })
 
     }
   }
 }
 </script>
-
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
 .contacts {
@@ -151,7 +194,7 @@ p {
   width: 100%;
   height: 100%;
   background-color: rgba(0, 0, 0, .5);
-  display: table;
+  display: inline-table;
   transition: opacity .3s ease;
 }
 
@@ -161,7 +204,7 @@ p {
 }
 
 .modal-container {
-  height: 60%;
+  height: 50%;
   width: 300px;
   margin: 0px auto;
   padding: 5% 8%;
@@ -180,7 +223,7 @@ p {
 .modal-body {
   margin: 20px 0;
   overflow: auto;
-  height: 80%;
+  height: 75%;
 }
 
 .modal-default-button {
@@ -204,9 +247,9 @@ p {
   opacity: 0;
 }
 
-.modal-enter .modal-container,
+/* .modal-enter .modal-container,
 .modal-leave-active .modal-container {
   -webkit-transform: scale(1.1);
   transform: scale(1.1);
-}
+} */
 </style>
