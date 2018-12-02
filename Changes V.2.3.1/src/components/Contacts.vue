@@ -20,6 +20,7 @@
                     <slot name="body">
                       <div v-if="users.length">
                         <div v-for="contact in users" class="user" @click ="addContact(currentUser.uid, contact.name, contact.email, contact.id)">
+
                           <h3 @click ="addContact(currentUser.uid, contact.name, contact.email, contact.id)">{{ contact.name }}</h3>
                       <i><h4 class = "email2" @click ="addContact(currentUser.uid, contact.name, contact.email, contact.id)">{{ contact.email }}</h4></i>
                   </div>
