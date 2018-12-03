@@ -9,7 +9,7 @@
             <div class="create-jar">
               <form @submit.prevent>
                 <textarea v-model.trim="post.content" placeholder = " Description."></textarea>
-                <textarea type="number" v-model.trim="post.balance" placeholder = " Add initial funds"></textarea>
+                <!-- <textarea type="number" v-model.trim="post.balance" placeholder = " Add initial funds"></textarea> -->
                 <!-- <input type = "number" v-modal="post.balance" placeholder = "Initial $0.00"></input> -->
               <button @click="createJar(post.id)" :disabled="post.content == ''">Add Jar</button>
             </form>
@@ -29,7 +29,9 @@
             <font size = "5px">
             <p class="content">{{ post.content | trimLength }}</p>
           </font>
+            <!-- <h2>${{ post.balance-comment.balance}}</h2> -->
             <h2>${{ post.balance }}</h2>
+
             <ul>
               <font size = "2px">
                 <li><i><button @click ="openCommentModal(post)">Transaction: {{ post.comments }}</button></i></li>
@@ -66,8 +68,9 @@
 
                       <p>add a transaction</p>
                       <form @submit.prevent>
-                        <textarea v-model.trim="comment.content"></textarea>
-                        <button @click="addComment" :disabled="comment.content == ''" class="button">submit</button>
+                        <textarea v-model.trim="comment.content" placeholder="Description"></textarea>
+                        <textarea type="number" v-model.trim="comment.balance" placeholder="Add amount $0.00"></textarea>
+                        <button @click="addComment(post)" :disabled="comment.content == ''" class="button">submit</button>
                       </form>
 
                     </slot>
@@ -100,7 +103,7 @@
                       <div class ="post">
                       <h2>{{ fullPost.content }}</h2>
                       <h3>{{ fullPost.userName }}</h3>
-                      <h2>{{ fullPost.balance }}</h2>
+                      <h2>${{ fullPost.balance }}</h2>
                       <span><i>{{ fullPost.createdOn | formatDate }}</i></span>
 
                       <ul>
@@ -121,6 +124,8 @@
                           <h3>{{ comment.userName }}</h3>
                           <span><i>{{ comment.createdOn | formatDate }}</i></span>
                           <p>{{ comment.content }}</p>
+                          <h3>${{ comment.balance }}</h3>
+
                         </div>
 
                         </div>
@@ -191,7 +196,9 @@ export default {
       userContacts: [],
       post: {
           content: '',
-          balance: ''
+          balance: '',
+          totalExpense: '',
+          totalIncome: ''
       },
       comment: {
         postId: '',
@@ -200,7 +207,8 @@ export default {
         balance: '',
         postComments: 0
       },
-      fullPost: {}
+      fullPost: {},
+      postComments: []
 
     }
   },
@@ -220,6 +228,7 @@ export default {
                 editors: []
            }).then(ref => {
                this.post.content = ''
+               // this.post.balance = ''
            }).catch(err => {
                console.log(err)
            })
@@ -234,30 +243,33 @@ export default {
     openCommentModal(post) {
     this.comment.postId = post.id
     this.comment.userId = post.userId
-    this.comment.balance = post.balance
     this.comment.postComments = post.comments
+    // this.comment.balance = post.balance
     this.showCommentModal = true
     },
     closeCommentModal() {
         this.comment.postId = ''
         this.comment.userId = ''
         this.comment.content = ''
+        // this.comment.balance = ''
         this.showCommentModal = false
     },
-    addComment() {
+
+    addComment(post) {
         let postId = this.comment.postId
         let postComments = this.comment.postComments
 
         fb.commentsCollection.add({
             createdOn: new Date(),
             content: this.comment.content,
+            balance: this.comment.balance,
             postId: postId,
             userId: this.currentUser.uid,
             userName: this.userProfile.name
         }).then(doc => {
             fb.postsCollection.doc(postId).update({
                 comments: postComments + 1,
-                // balance: this.post.balance + this.comment.balance
+                balance: this.post.balance - this.comment.balance
             }).then(() => {
                 this.closeCommentModal()
             })
@@ -341,11 +353,10 @@ export default {
     }
   }
 }
-</script>
 
-<!-- Add "scoped" attribute to limit CSS to this component only -->
 </script>
 <!-- Add "scoped" attribute to limit CSS to this component only -->
+
 <style scoped>
 .dashboard {
   align-content: center;
@@ -505,7 +516,7 @@ button{
   vertical-align: middle;
 }
 .modal-container {
-  height: 45%;
+  height: 60%;
   width: 300px;
   margin: 0px auto;
   padding: 5% 8%;
