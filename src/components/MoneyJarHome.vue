@@ -66,10 +66,10 @@
                   <div class="modal-body">
                     <slot name="body">
 
-                      <p>add a transaction</p>
+                      <p>Add a transaction</p>
                       <form @submit.prevent>
                         <textarea v-model.trim="comment.content" placeholder="Description"></textarea>
-                        <textarea type="number" v-model.trim="comment.balance" placeholder="Add amount $0.00"></textarea>
+                        <textarea type="number" v-model.trim="comment.balance" placeholder="Add or remove amount $0.00"></textarea>
                         <button @click="addComment(post)" :disabled="comment.content == ''" class="button">submit</button>
                       </form>
 
@@ -118,21 +118,19 @@
                   <div class="modal-body2">
                     <slot name="body">
 
-                      <div class= "commentCont">
                       <div v-show="postComments.length" class="comments">
                         <div v-for="comment in postComments" class="comment">
+                          <div class= "commentCont">
                           <h3>{{ comment.userName }}</h3>
                           <span><i>{{ comment.createdOn | formatDate }}</i></span>
                           <p>{{ comment.content }}</p>
                           <h3>${{ comment.balance }}</h3>
-
                         </div>
-
                         </div>
                       </div>
 
 
-                      <!-- <div v-if="users.length">
+                      <div v-if="users.length">
                         <div v-for="contact in users" class="contact" @click= "addPermissions(currentUser.uid, contact.name, contact.email, contact.id, post.id)">
                               <h3 @click= "addPermissions(currentUser.uid, contact.name, contact.email, contact.id, post.id)">{{ contact.name }}</h3>
                               <i><h4 class = "email2" @click= "addPermissions(currentUser.uid, contact.name, contact.email, contact.id, post.id)">{{ contact.email }}</h4></i>
@@ -140,7 +138,7 @@
                               </div>
                             <div v-else>
                               <p class="no-results">There are currently no Contacts</p>
-                            </div> -->
+                            </div>
 
                         <!-- <div v-if="userContacts.length">
                           <div v-for="friend in userContacts" class="contact" @click= "addPermissions(currentUser.uid, friend.name, friend.email, friend.id, post.id)">
@@ -196,18 +194,19 @@ export default {
       userContacts: [],
       post: {
           content: '',
-          balance: '',
-          totalExpense: '',
-          totalIncome: ''
+          balance: 0,
+          // totalExpense: 0,
+          totalIncome: 0
       },
       comment: {
         postId: '',
         userId: '',
         content: '',
-        balance: '',
+        balance: 0,
         postComments: 0
       },
       fullPost: {},
+      jarBalance: [],
       postComments: []
 
     }
@@ -244,20 +243,23 @@ export default {
     this.comment.postId = post.id
     this.comment.userId = post.userId
     this.comment.postComments = post.comments
-    // this.comment.balance = post.balance
+    this.comment.balance = '',
+    this.post.totalIncome = post.balance
     this.showCommentModal = true
     },
     closeCommentModal() {
         this.comment.postId = ''
         this.comment.userId = ''
         this.comment.content = ''
-        // this.comment.balance = ''
+        this.comment.balance = ''
         this.showCommentModal = false
     },
 
     addComment(post) {
         let postId = this.comment.postId
         let postComments = this.comment.postComments
+        // this.post.totalExpense += Number(this.comment.balance)
+        // post.totalIncome += Number(this.comment.balance)
 
         fb.commentsCollection.add({
             createdOn: new Date(),
@@ -269,7 +271,9 @@ export default {
         }).then(doc => {
             fb.postsCollection.doc(postId).update({
                 comments: postComments + 1,
-                balance: this.post.balance - this.comment.balance
+                totalIncome: post.totalIncome += Number(this.comment.balance),
+                balance: post.totalIncome
+
             }).then(() => {
                 this.closeCommentModal()
             })
@@ -355,13 +359,13 @@ export default {
 }
 
 </script>
-<!-- Add "scoped" attribute to limit CSS to this component only -->
 
+<!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
 .dashboard {
   align-content: center;
-  margin-left: 20%;
-  margin-right: 20%;
+  margin-left: 15%;
+  margin-right: 15%;
 }
 h1, h5 {
   font-weight: normal;
@@ -531,7 +535,7 @@ button{
   vertical-align: middle;
 }
 .modal-container2 {
-  height: 600px;
+  height: 800px;
   width: 300px;
   margin: 0px auto;
   padding: 5% 8%;
