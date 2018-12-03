@@ -8,7 +8,7 @@
           <p><i>{{ userProfile.email }}</i><p>
             <div class="create-jar">
               <form @submit.prevent>
-                <textarea v-model.trim="post.content" placeholder = " Description."></textarea>
+                <textarea v-model.trim="post.content" placeholder = " Description"></textarea>
                 <!-- <textarea type="number" v-model.trim="post.balance" placeholder = " Add initial funds"></textarea> -->
                 <!-- <input type = "number" v-modal="post.balance" placeholder = "Initial $0.00"></input> -->
               <button @click="createJar(post.id)" :disabled="post.content == ''">Add Jar</button>
@@ -34,11 +34,67 @@
 
             <ul>
               <font size = "2px">
-                <li><i><button @click ="openCommentModal(post)">Transaction: {{ post.comments }}</button></i></li>
+                <li><button @click ="openCommentModal(post)">Transaction: {{ post.comments }}</button></li>
+                <!-- <li><button @click = "openPermissionModal(currentUser.uid, contact.name, contact.email, contact.id, post)">Permissions</button></li> -->
+                <!-- <li><button @click = "openPermissionModal(post)">Permissions</button></li> -->
+                <li><button @click = "showModal3 = true">Permissions</button></li>
+
                 <li><button class = "viewFullJar" @click="viewPost(post)">View Full Jar</button></li>
                 <li><button class = "delete" @click="deleteJar(post.id)">Delete Jar</button></li>
               </font>
+
+              <div v-if= "showModal3" @close = "showModal3 = false">
+                <template v-modal = "showModal3" type="text/x-template" id = "modal-template">
+                  <transition name="modal">
+                    <!-- <div class="modal-mask"> -->
+                      <div class="modal-wrapper">
+                        <div class="modal-container3">
+
+                          <div class="modal-header">
+                            <slot name="header">
+                              <!-- <h3 slot = "header">{{ post.content }}</h3> -->
+                              <h3 slot = "header">Contacts</h3>
+
+                            </slot>
+                          </div>
+
+                          <div class="modal-body3">
+                            <slot name="body">
+                              <div v-if="users.length">
+                                <div v-for="contact in users" class="contact" @click= "addPermissions(currentUser.uid, contact.name, contact.email, contact.id, post), showModal3 = false">
+                                      <h3 @click= "addPermissions(currentUser.uid, contact.name, contact.email, contact.id, post)">{{ contact.name }}</h3>
+                                      <i><h4 class = "email2" @click= "addPermissions(currentUser.uid, contact.name, contact.email, contact.id, post)">{{ contact.email }}</h4></i>
+                                      </div>
+                                      </div>
+                                    <div v-else>
+                                      <p class="no-results">There are currently no Contacts</p>
+                                    </div>
+
+                        <div v-else>
+                          <p class="no-results">There are currently no Users</p>
+                        </div>
+                            </slot>
+                          </div>
+
+                          <div class="modal-footer">
+                            <slot name="footer">
+                              <p>Click user to give permission to view and edit.</p>
+                              <button class="modal-default-button" @click="showModal3 = false">
+                                DONE
+                              </button>
+                            </slot>
+                          </div>
+                        </div>
+                      <!-- </div> -->
+                    </div>
+                  </transition>
+                </template>
+              </div>
+
+
             </ul>
+
+
 
       </div>
     </div>
@@ -69,7 +125,7 @@
                       <p>Add a transaction</p>
                       <form @submit.prevent>
                         <textarea v-model.trim="comment.content" placeholder="Description"></textarea>
-                        <textarea type="number" v-model.trim="comment.balance" placeholder="Add or remove amount $0.00"></textarea>
+                        <textarea type="number" v-model.trim="comment.balance" placeholder="Add or remove amount: $0.00"></textarea>
                         <button @click="addComment(post)" :disabled="comment.content == ''" class="button">submit</button>
                       </form>
 
@@ -89,6 +145,8 @@
           </transition>
         </template>
       </div>
+
+
 
       <div v-if= "showModalPost" @close = "showModalPost = false">
         <template v-modal = "showModalPost" type="text/x-template" id = "modal-template">
@@ -130,15 +188,15 @@
                       </div>
 
 
-                      <div v-if="users.length">
-                        <div v-for="contact in users" class="contact" @click= "addPermissions(currentUser.uid, contact.name, contact.email, contact.id, post.id)">
-                              <h3 @click= "addPermissions(currentUser.uid, contact.name, contact.email, contact.id, post.id)">{{ contact.name }}</h3>
-                              <i><h4 class = "email2" @click= "addPermissions(currentUser.uid, contact.name, contact.email, contact.id, post.id)">{{ contact.email }}</h4></i>
+                      <!-- <div v-if="users.length">
+                        <div v-for="contact in users" class="contact" @click= "addPermissions(currentUser.uid, contact.name, contact.email, contact.id, post)">
+                              <h3 @click= "addPermissions(currentUser.uid, contact.name, contact.email, contact.id, post)">{{ contact.name }}</h3>
+                              <i><h4 class = "email2" @click= "addPermissions(currentUser.uid, contact.name, contact.email, contact.id, post)">{{ contact.email }}</h4></i>
                               </div>
                               </div>
                             <div v-else>
                               <p class="no-results">There are currently no Contacts</p>
-                            </div>
+                            </div> -->
 
                         <!-- <div v-if="userContacts.length">
                           <div v-for="friend in userContacts" class="contact" @click= "addPermissions(currentUser.uid, friend.name, friend.email, friend.id, post.id)">
@@ -169,6 +227,51 @@
         </template>
       </div>
 
+      <!-- <div v-if= "showPermissionModal" @close = "showPermissionModal = false">
+        <template v-modal = "showPermissionModal" type="text/x-template" id = "modal-template">
+          <transition name="modal">
+            <div class="modal-mask">
+              <div class="modal-wrapper">
+                <div class="modal-container">
+
+                  <div class="modal-header">
+                    <slot name="header">
+                      <h3 slot = "header">{{ post.content }}</h3>
+                    </slot>
+                  </div>
+
+                  <div class="modal-body">
+                    <slot name="body">
+
+
+                    <div v-if="users.length">
+                      <div v-for="contact in users" class="contact" @click= "addPermissions(currentUser.uid, contact.name, contact.email, contact.id, post)">
+                            <h3 @click= "addPermissions(currentUser.uid, contact.name, contact.email, contact.id, post)">{{ contact.name }}</h3>
+                            <i><h4 class = "email2" @click= "addPermissions(currentUser.uid, contact.name, contact.email, contact.id, post)">{{ contact.email }}</h4></i>
+                            </div>
+                            </div>
+                          <div v-else>
+                            <p class="no-results">There are currently no Contacts</p>
+                          </div>
+
+                    </slot>
+                  </div>
+
+                  <div class="modal-footer">
+                    <slot name="footer">
+                      <p>Click user to give permission to view and edit.</p>
+                      <button class="modal-default-button" @click="showPermissionModal = false">
+                        DONE
+                      </button>
+                    </slot>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </transition>
+        </template>
+      </div> -->
+
 
     </section>
   </div>
@@ -190,6 +293,7 @@ export default {
       msg: 'Money Jar Dashboard',
       showModal3: false,
       showModalPost: false,
+      showPermissionModal: false,
       showCommentModal: false,
       userContacts: [],
       post: {
@@ -302,22 +406,14 @@ export default {
     this.postComments = []
     this.showModalPost = false
     },
-    preLoad(uid, name, email, id, docId){
-      fb.contactsCollection.where("contacts", "array-contains", uid).get().then(docs => {
-            let contactsArray = []
-            docs.forEach(doc => {
-                let friend = doc.data()
-                friend.id = doc.id
-                contactsArray.push(friend)
-                console.log(friend.id)
-            })
-            this.userContacts = contactsArray
-          }).catch(err => {
-          console.log(err)
-      })
+    openPermissionModal(post) {
+    this.showPermissionModal = true
+    },
+    closePermissionModal() {
+        this.showPermissionModal = false
     },
 
-    addPermissions(uid, name, email, id, docId){
+    addPermissions(uid, name, email, id, post){
       fb.contactsCollection.where("contacts", "array-contains", uid).get().then(docs => {
             let contactsArray = []
             docs.forEach(doc => {
@@ -331,7 +427,7 @@ export default {
           console.log(err)
       }),
 
-      fb.postsCollection.doc(docId).update({
+      fb.postsCollection.doc(post.id).update({
           viewers: firebase.firestore.FieldValue.arrayUnion(uid, id),
           editors: firebase.firestore.FieldValue.arrayUnion(uid, id),
 
@@ -397,6 +493,7 @@ textarea{
   margin: 5% 10% 2% 10%;
   border-radius: 10px;
   align-self: center;
+  text-align: center;
   box-sizing: content-box;
 }
 button{
@@ -515,14 +612,15 @@ button{
   display: inline-table;
   transition: opacity .3s ease;
 }
+
 .modal-wrapper {
   display: table-cell;
   vertical-align: middle;
 }
 .modal-container {
-  height: 60%;
-  width: 300px;
-  margin: 0px auto;
+  height: 410px;
+  width: 80%;
+  margin: 10px auto;
   padding: 5% 8%;
   background-color: #fff;
   border-radius: 2px;
@@ -545,6 +643,17 @@ button{
   transition: all .3s ease;
   font-family: Helvetica, Arial, sans-serif;
 }
+.modal-container3 {
+  height: 400px;
+  width: 80%;
+  margin: 10px auto;
+  padding: 5% 8%;
+  background-color: #fff;
+  border-radius: 2px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, .33);
+  transition: all .3s ease;
+  font-family: Helvetica, Arial, sans-serif;
+}
 .modal-header h3 {
   margin-top: 0;
   color: #42b983;
@@ -552,15 +661,20 @@ button{
 .modal-body {
   margin: 15px 0;
   overflow: auto;
-  height: 70%;
+  height: 75%;
 }
 .modal-body2 {
   margin: 15px 0;
   overflow: auto;
   height: 55%;
 }
+.modal-body3 {
+  margin: 15px 0;
+  overflow: auto;
+  height: 55%;
+}
 .modal-footer {
-  height: 5%;
+  height: 15%;
 }
 .modal-default-button {
   float: right;
