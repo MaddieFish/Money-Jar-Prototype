@@ -26,7 +26,7 @@
             <font size = "2px">
               <span class = "date">{{ post.createdOn | formatDate }}</span>
             </font>
-            <font size = "5px">
+            <font size = "4.5px">
             <p class="content">{{ post.content | trimLength }}</p>
           </font>
             <!-- <h2>${{ post.balance-comment.balance}}</h2> -->
@@ -61,9 +61,9 @@
                           <div class="modal-body3">
                             <slot name="body">
                               <div v-if="users.length">
-                                <div v-for="contact in users" class="contact" @click= "addPermissions(currentUser.uid, contact.name, contact.email, contact.id, post), showModal3 = false">
-                                      <h3 @click= "addPermissions(currentUser.uid, contact.name, contact.email, contact.id, post)">{{ contact.name }}</h3>
-                                      <i><h4 class = "email2" @click= "addPermissions(currentUser.uid, contact.name, contact.email, contact.id, post)">{{ contact.email }}</h4></i>
+                                <div v-for="contact in users" class="contact" @click= "addPermissions(currentUser.uid, currentUser.name, contact.name, contact.email, contact.id, post), showModal3 = false">
+                                      <h3 @click= "addPermissions(currentUser.uid, currentUser.name, contact.name, contact.email, contact.id, post)">{{ contact.name }}</h3>
+                                      <i><h4 class = "email2" @click= "addPermissions(currentUser.uid, currentUser.name, contact.name, contact.email, contact.id, post)">{{ contact.email }}</h4></i>
                                       </div>
                                       </div>
                                     <div v-else>
@@ -159,14 +159,17 @@
                     <slot name="header">
 
                       <div class ="post">
-                      <h2>{{ fullPost.content }}</h2>
+                        <br>
                       <h3>{{ fullPost.userName }}</h3>
+                      <h2>{{ fullPost.content }}</h2>
                       <h2>${{ fullPost.balance }}</h2>
                       <span><i>{{ fullPost.createdOn | formatDate }}</i></span>
 
                       <ul>
                         <li><a>Transactions: {{ fullPost.comments }}</a></li>
                         <!-- <li><a>likes {{ fullPost.likes }}</a></li> -->
+
+
                       </ul>
                   </div>
 
@@ -183,6 +186,7 @@
                           <span><i>{{ comment.createdOn | formatDate }}</i></span>
                           <p>{{ comment.content }}</p>
                           <h3>${{ comment.balance }}</h3>
+
                         </div>
                         </div>
                       </div>
@@ -214,6 +218,8 @@
                   <div class="modal-footer">
                     <slot name="footer">
                       <!-- <p>Click contact to add as editor and viewer</p> -->
+                      <p>Members: {{ fullPost.editorNames }}</p>
+
                       <button class="modal-default-button" @click="showModalPost = false">
                         DONE
                       </button>
@@ -226,51 +232,6 @@
           </transition>
         </template>
       </div>
-
-      <!-- <div v-if= "showPermissionModal" @close = "showPermissionModal = false">
-        <template v-modal = "showPermissionModal" type="text/x-template" id = "modal-template">
-          <transition name="modal">
-            <div class="modal-mask">
-              <div class="modal-wrapper">
-                <div class="modal-container">
-
-                  <div class="modal-header">
-                    <slot name="header">
-                      <h3 slot = "header">{{ post.content }}</h3>
-                    </slot>
-                  </div>
-
-                  <div class="modal-body">
-                    <slot name="body">
-
-
-                    <div v-if="users.length">
-                      <div v-for="contact in users" class="contact" @click= "addPermissions(currentUser.uid, contact.name, contact.email, contact.id, post)">
-                            <h3 @click= "addPermissions(currentUser.uid, contact.name, contact.email, contact.id, post)">{{ contact.name }}</h3>
-                            <i><h4 class = "email2" @click= "addPermissions(currentUser.uid, contact.name, contact.email, contact.id, post)">{{ contact.email }}</h4></i>
-                            </div>
-                            </div>
-                          <div v-else>
-                            <p class="no-results">There are currently no Contacts</p>
-                          </div>
-
-                    </slot>
-                  </div>
-
-                  <div class="modal-footer">
-                    <slot name="footer">
-                      <p>Click user to give permission to view and edit.</p>
-                      <button class="modal-default-button" @click="showPermissionModal = false">
-                        DONE
-                      </button>
-                    </slot>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </transition>
-        </template>
-      </div> -->
 
 
     </section>
@@ -406,14 +367,7 @@ export default {
     this.postComments = []
     this.showModalPost = false
     },
-    openPermissionModal(post) {
-    this.showPermissionModal = true
-    },
-    closePermissionModal() {
-        this.showPermissionModal = false
-    },
-
-    addPermissions(uid, name, email, id, post){
+    addPermissions(uid, uName, name, email, id, post){
       fb.contactsCollection.where("contacts", "array-contains", uid).get().then(docs => {
             let contactsArray = []
             docs.forEach(doc => {
@@ -428,8 +382,10 @@ export default {
       }),
 
       fb.postsCollection.doc(post.id).update({
-          viewers: firebase.firestore.FieldValue.arrayUnion(uid, id),
-          editors: firebase.firestore.FieldValue.arrayUnion(uid, id),
+          viewers: firebase.firestore.FieldValue.arrayUnion(id),
+          viewerNames: firebase.firestore.FieldValue.arrayUnion(name),
+          editors: firebase.firestore.FieldValue.arrayUnion(id),
+          editorNames: firebase.firestore.FieldValue.arrayUnion(name)
 
           }).then(ref => {
              // alert('The user has been added to your contacts')
@@ -633,7 +589,7 @@ button{
   vertical-align: middle;
 }
 .modal-container2 {
-  height: 800px;
+  height: 700px;
   width: 300px;
   margin: 0px auto;
   padding: 5% 8%;
@@ -666,7 +622,7 @@ button{
 .modal-body2 {
   margin: 15px 0;
   overflow: auto;
-  height: 55%;
+  height: 47%;
 }
 .modal-body3 {
   margin: 15px 0;
