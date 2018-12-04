@@ -49,7 +49,7 @@ const fb = require('../firebaseConfig.js')
         height: 30%;
         min-height: 80px;
         max-height: 85px;
-        position: sticky;
+        position: fixed;
         width: 100%;
         top: 0;
         opacity: 0.9;
@@ -66,7 +66,7 @@ const fb = require('../firebaseConfig.js')
         color: #42b983;
     }
     nav {
-        position: absolute;
+        position: sticky;
         left:40%;
         width: 60%;
     }
