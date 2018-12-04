@@ -3,6 +3,7 @@
       <h4>User creation</h4>
       <input type="text" v-model.trim="signupForm.name" placeholder="Username" id="name"/><br>
       <input type="text" v-model.trim="signupForm.email" placeholder="Email" id ="email2"><br>
+      <input type="text" v-model.trim="signupForm.institution" placeholder="Bank Institution" id ="institution"><br>
       <input type="password" v-model.trim="signupForm.password" placeholder="Password" id="password2"><br>
       <button v-on:click="signUp">Sign Up</button>
       <span>Go back to <router-link to="/login">login</router-link>.</span>
@@ -20,6 +21,7 @@ const fb = require('../firebaseConfig.js')
         signupForm: {
           name: '',
           email: '',
+          institution: '',
           password: '',
           contacts: []
         }
@@ -36,6 +38,7 @@ const fb = require('../firebaseConfig.js')
            fb.usersCollection.doc(user.user.uid).set({
              name: this.signupForm.name,
               email: this.signupForm.email,
+              institution: this.signupForm.institution,
               contacts: this.signupForm.contacts
              }).then(() => {
               this.$router.push('/dashboard')
@@ -67,9 +70,9 @@ const fb = require('../firebaseConfig.js')
     /* background-color: rgb(255, 255, 102); */
   }
   input {
-    margin: 10px 0;
+    margin: 7px 0;
     width: 40%;
-    padding: 15px;
+    padding: 12px;
   }
   button {
     padding: 10px 20px;

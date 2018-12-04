@@ -255,7 +255,7 @@ p {
   vertical-align: middle;
 }
 .modal-container {
-  height: 50%;
+  height: 60%;
   width: 300px;
   margin: 0px auto;
   padding: 5% 8%;

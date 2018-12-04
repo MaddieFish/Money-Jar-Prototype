@@ -6,12 +6,13 @@
         <div class = "profile">
           <h2>{{ userProfile.name }}</h2>
           <p><i>{{ userProfile.email }}</i><p>
+            <h3>{{ userProfile.institution }}</h3>
             <div class="create-jar">
               <form @submit.prevent>
                 <textarea v-model.trim="post.content" placeholder = " Description"></textarea>
                 <!-- <textarea type="number" v-model.trim="post.balance" placeholder = " Add initial funds"></textarea> -->
                 <!-- <input type = "number" v-modal="post.balance" placeholder = "Initial $0.00"></input> -->
-              <button @click="createJar(post.id)" :disabled="post.content == ''">Add Jar</button>
+              <button @click="createJar(currentUser.uid, post)" :disabled="post.content == ''">Add Jar</button>
             </form>
         </div>
       </div>
@@ -40,7 +41,7 @@
                 <li><button @click = "showModal3 = true">Permissions</button></li>
 
                 <li><button class = "viewFullJar" @click="viewPost(post)">View Full Jar</button></li>
-                <li><button class = "delete" @click="deleteJar(post.id)">Delete Jar</button></li>
+                <li><button class = "delete" @click="deleteJar(post)">Close Jar</button></li>
               </font>
 
               <div v-if= "showModal3" @close = "showModal3 = false">
@@ -179,6 +180,8 @@
                   <div class="modal-body2">
                     <slot name="body">
 
+                      <p>Members: {{ fullPost.editorNames }}</p>
+
                       <div v-show="postComments.length" class="comments">
                         <div v-for="comment in postComments" class="comment">
                           <div class= "commentCont">
@@ -190,17 +193,6 @@
                         </div>
                         </div>
                       </div>
-
-
-                      <!-- <div v-if="users.length">
-                        <div v-for="contact in users" class="contact" @click= "addPermissions(currentUser.uid, contact.name, contact.email, contact.id, post)">
-                              <h3 @click= "addPermissions(currentUser.uid, contact.name, contact.email, contact.id, post)">{{ contact.name }}</h3>
-                              <i><h4 class = "email2" @click= "addPermissions(currentUser.uid, contact.name, contact.email, contact.id, post)">{{ contact.email }}</h4></i>
-                              </div>
-                              </div>
-                            <div v-else>
-                              <p class="no-results">There are currently no Contacts</p>
-                            </div> -->
 
                         <!-- <div v-if="userContacts.length">
                           <div v-for="friend in userContacts" class="contact" @click= "addPermissions(currentUser.uid, friend.name, friend.email, friend.id, post.id)">
@@ -218,10 +210,11 @@
                   <div class="modal-footer">
                     <slot name="footer">
                       <!-- <p>Click contact to add as editor and viewer</p> -->
-                      <p>Members: {{ fullPost.editorNames }}</p>
-
                       <button class="modal-default-button" @click="showModalPost = false">
                         DONE
+                      </button>
+                      <button class="modal-default-button" @click="showModalPost = false">
+                        Jar Restrictions
                       </button>
                     </slot>
                   </div>
@@ -261,7 +254,9 @@ export default {
           content: '',
           balance: 0,
           // totalExpense: 0,
-          totalIncome: 0
+          totalIncome: 0,
+          editors: [],
+          viewers: []
       },
       comment: {
         postId: '',
@@ -280,25 +275,31 @@ export default {
     ...mapState(['userProfile', 'currentUser', 'posts', 'users', 'friends'])
   },
   methods: {
-    createJar(id){
+    createJar(uid, post){
       fb.postsCollection.add({
                 createdOn: new Date(),
                 content: this.post.content,
                 balance: this.post.balance,
                 userName: this.userProfile.name,
+                userId: this.currentUser.uid,
                 comments: 0,
                 likes: 0,
-                viewers: [],
-                editors: []
+                // viewers: [],
+                // editors: []
+                editors: firebase.firestore.FieldValue.arrayUnion(this.currentUser.uid),
+                viewers: firebase.firestore.FieldValue.arrayUnion(this.currentUser.uid)
            }).then(ref => {
                this.post.content = ''
-               // this.post.balance = ''
-           }).catch(err => {
+               console.log(this.currentUser.uid)
+
+                            }).catch(err => {
                console.log(err)
            })
     },
-    deleteJar(id){
-      fb.postsCollection.doc(id).delete().then(function() {
+
+    deleteJar(post){
+      fb.postsCollection.doc(post.id).delete().then(function() {
+      // fb.postsCollection.where("userId", "==", this.currentUser.uid).doc(post.id).delete().then(function() {
                 console.log("Document successfully deleted!");
             }).catch(function(error) {
                 console.error("Error removing document: ", error);
@@ -323,8 +324,6 @@ export default {
     addComment(post) {
         let postId = this.comment.postId
         let postComments = this.comment.postComments
-        // this.post.totalExpense += Number(this.comment.balance)
-        // post.totalIncome += Number(this.comment.balance)
 
         fb.commentsCollection.add({
             createdOn: new Date(),
@@ -347,7 +346,7 @@ export default {
         })
     },
     viewPost(post) {
-        fb.commentsCollection.where('postId', '==', post.id).get().then(docs => {
+        fb.commentsCollection.where('postId', '==', post.id).orderBy('createdOn', 'desc').get().then(docs => {
           let commentsArray = []
 
           docs.forEach(doc => {
@@ -382,9 +381,9 @@ export default {
       }),
 
       fb.postsCollection.doc(post.id).update({
-          viewers: firebase.firestore.FieldValue.arrayUnion(id),
+          viewers: firebase.firestore.FieldValue.arrayUnion(uid,id),
           viewerNames: firebase.firestore.FieldValue.arrayUnion(name),
-          editors: firebase.firestore.FieldValue.arrayUnion(id),
+          editors: firebase.firestore.FieldValue.arrayUnion(uid,id),
           editorNames: firebase.firestore.FieldValue.arrayUnion(name)
 
           }).then(ref => {
@@ -443,9 +442,9 @@ li {
 }
 
 textarea{
-  padding-bottom: 20px;
+  padding-bottom: 10px;
   width: 50%;
-  padding: 20px 20px;
+  padding: 10px 20px;
   margin: 5% 10% 2% 10%;
   border-radius: 10px;
   align-self: center;
@@ -574,7 +573,7 @@ button{
   vertical-align: middle;
 }
 .modal-container {
-  height: 410px;
+  height: 415px;
   width: 80%;
   margin: 10px auto;
   padding: 5% 8%;
@@ -633,6 +632,7 @@ button{
   height: 15%;
 }
 .modal-default-button {
+  margin-left: 10px;
   float: right;
 }
 

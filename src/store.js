@@ -25,7 +25,27 @@ fb.auth.onAuthStateChanged(user => {
         }),
 
         // realtime updates from our posts collection
-        fb.postsCollection.orderBy('createdOn', 'desc').onSnapshot(querySnapshot => {
+
+        // fb.postsCollection.where("editors", "array-contains", user.uid).where("userId", "==", user.uid).orderBy('createdOn', 'desc').onSnapshot(querySnapshot => {
+        //   // fb.postsCollection.where("userId", "==", user.uid).orderBy('createdOn', 'desc').onSnapshot(querySnapshot => {
+        //     // fb.postsCollection.where("editors", "array-contains", user.uid).orderBy('createdOn', 'desc').onSnapshot(querySnapshot => {
+        //
+        //   // fb.postsCollection.orderBy('createdOn', 'desc').onSnapshot(querySnapshot => {
+        //
+        //     let postsArray = []
+        //
+        //     querySnapshot.forEach(doc => {
+        //         let post = doc.data()
+        //         post.id = doc.id
+        //         postsArray.push(post)
+        //         // console.log(post.id)
+        //     })
+        //     store.commit('setPosts', postsArray)
+        // }),
+
+        fb.postsCollection.where("editors", "array-contains", user.uid).orderBy('createdOn', 'desc').onSnapshot(querySnapshot => {
+          // fb.postsCollection.orderBy('createdOn', 'desc').onSnapshot(querySnapshot => {
+
             let postsArray = []
 
             querySnapshot.forEach(doc => {
